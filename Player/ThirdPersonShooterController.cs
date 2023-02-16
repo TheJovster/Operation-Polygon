@@ -56,14 +56,12 @@ public class ThirdPersonShooterController : MonoBehaviour
         {
             aimCamera.gameObject.SetActive(true);
             controller.SetMouseSensitivityFraction(mouseAimSensitivity);
-            controller.SetMoveSpeed(aimMoveSpeed);
-            controller.SetSprintSpeed(aimSprintSpeed);
             crosshairHip.gameObject.SetActive(false);
             crosshairAim.gameObject.SetActive(true);
 
             Vector3 aimTarget = mouseWorldPosition;
             aimTarget.y = transform.position.y;
-            Vector3 aimDirection = aimTarget - transform.position.normalized;
+            Vector3 aimDirection = (aimTarget - transform.position).normalized;
 
             transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f); //bad practice here
         }
@@ -71,8 +69,6 @@ public class ThirdPersonShooterController : MonoBehaviour
         {
             aimCamera.gameObject.SetActive(false);
             controller.SetMouseSensitivityFraction(defaultMouseSensitivity);
-            controller.ResetMoveSpeedValue();
-            controller.ResetSprintSpeedValue();
             crosshairAim.gameObject.SetActive(false);
             crosshairHip.gameObject.SetActive(true);
         }
