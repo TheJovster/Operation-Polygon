@@ -15,9 +15,8 @@ public class ThirdPersonShooterController : MonoBehaviour
     //variables
     [SerializeField] private float defaultMouseSensitivity = 1f;
     [SerializeField] private float mouseAimSensitivity = .333f;
-
-    [SerializeField] private float defaultMoveSpeedFraction = 1f;
-    [SerializeField] private float aimMoveSpeedFraction = .5f;
+    [SerializeField] private float aimMoveSpeed = 1f;
+    [SerializeField] private float aimSprintSpeed = 2.65f;
 
     void Awake()
     {
@@ -37,8 +36,8 @@ public class ThirdPersonShooterController : MonoBehaviour
         {
             aimCamera.gameObject.SetActive(true);
             controller.SetMouseSensitivityFraction(mouseAimSensitivity);
-            controller.SetMoveSpeed(aimMoveSpeedFraction);
-            controller.SetSprintSpeed(aimMoveSpeedFraction);
+            controller.SetMoveSpeed(aimMoveSpeed);
+            controller.SetSprintSpeed(aimSprintSpeed);
 
         }
         else
