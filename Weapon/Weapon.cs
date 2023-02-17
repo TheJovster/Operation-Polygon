@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using StarterAssets;
 using UnityEngine.Windows;
+using UnityEngine.Timeline;
 
 namespace OperationPolygon.Combat 
 {
@@ -15,8 +16,15 @@ namespace OperationPolygon.Combat
         [SerializeField] private Projectile weaponProjectile; //the projectile used by the weapon.
         [SerializeField] private ThirdPersonShooterController shooter;
         [SerializeField] private AimTarget aimTarget;
+        [Header("FX Components")]
         [SerializeField] private ParticleSystem muzzleFlashFX;
         [SerializeField] private ParticleSystem bulletEjectFX;
+        [Header("Audio FX Components")]
+        [SerializeField] private AudioSource weaponAudioSource;
+        [SerializeField] private AudioClip weaponShotSound;
+        [SerializeField] private AudioClip weaponReloadSound;
+
+        
 
         private StarterAssetsInputs input;
 
@@ -26,6 +34,8 @@ namespace OperationPolygon.Combat
         [SerializeField] private int magSize = 30;
         //serialized for testing purposes
         [SerializeField]private int currentAmmoInMag;
+
+        private bool isReloading = false;
 
         private void Awake()
         {
@@ -41,7 +51,7 @@ namespace OperationPolygon.Combat
 
         private void Update()
         {
-            if(input.shoot && shooter.IsAiming() && currentAmmoInMag > 0) 
+            if(input.shoot && shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading) 
             {
                 Shoot();
             }
@@ -82,6 +92,7 @@ namespace OperationPolygon.Combat
             //if(current ammo in backpack == 0) return;
             //the reload system is very simple (for now), will try to add animations and anim rigging later.
             //if(currentAmmoInMag == mag size) return;
+            isReloading = true;
             StartCoroutine(ReloadAnimationWaitTime());
             Debug.Log(currentAmmoInMag);
             input.reload = false;
@@ -89,9 +100,23 @@ namespace OperationPolygon.Combat
 
         private IEnumerator ReloadAnimationWaitTime() 
         {
-            shooter.GetAnimator().Play(reloadAnimHash);
-            yield return new WaitForSeconds(.885f);
+            shooter.GetAnimator().Play(reloadAnimHash, 0);
+            if (shooter.IsAiming()) 
+            {
+                shooter.GetAnimator().Play(reloadAnimHash, 1);
+            }
+            yield return new WaitForSeconds(2f);
             currentAmmoInMag = magSize;
+            isReloading = false;
+        }
+
+
+
+        //public getter classes
+
+        public int GetCurrentAmmoInMag() 
+        {
+            return currentAmmoInMag;
         }
 
         //notes I left in ThirdPersonShooterController
