@@ -12,7 +12,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private CinemachineVirtualCamera aimCamera;
 
         //components
-        private StarterAssetsInputs inputs;
+        private StarterAssetsInputs input;
         private ThirdPersonController controller;
         [SerializeField] private Rig aimRig;
 
@@ -43,7 +43,7 @@ namespace OperationPolygon.Combat
 
         void Awake()
         {
-            inputs = GetComponent<StarterAssetsInputs>();
+            input = GetComponent<StarterAssetsInputs>();
             controller = GetComponent<ThirdPersonController>();
             animator = GetComponent<Animator>();
         }
@@ -53,6 +53,7 @@ namespace OperationPolygon.Combat
         {
             AimState();
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
+            Debug.Log(input.aim);
         }
 
         private void AimState()
@@ -66,9 +67,9 @@ namespace OperationPolygon.Combat
                 mouseWorldPosition = hit.point;
             }
 
-            if (inputs.aim)
+            if (input.aim)
             {
-
+                
                 aimCamera.gameObject.SetActive(true);
                 controller.SetMouseSensitivityFraction(mouseAimSensitivity);
                 controller.SetRotationWithMovement(false);
@@ -86,6 +87,7 @@ namespace OperationPolygon.Combat
             }
             else
             {
+                
                 aimCamera.gameObject.SetActive(false);
                 controller.SetMouseSensitivityFraction(defaultMouseSensitivity);
                 controller.SetRotationWithMovement(true);
