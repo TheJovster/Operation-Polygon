@@ -31,7 +31,8 @@ namespace OperationPolygon.Combat
         [SerializeField] private float rigWeightLerpTime = 20f;
         private float aimRigWeight;
 
-        private bool canShoot = false;
+        //serialized for testing
+        [SerializeField]private bool isAiming = false;
 
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
@@ -67,10 +68,12 @@ namespace OperationPolygon.Combat
 
             if (inputs.aim)
             {
+
                 aimCamera.gameObject.SetActive(true);
                 controller.SetMouseSensitivityFraction(mouseAimSensitivity);
                 controller.SetRotationWithMovement(false);
                 aimRigWeight = 1f;
+                isAiming = true;
                 crosshairHip.gameObject.SetActive(false);
                 crosshairAim.gameObject.SetActive(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * animLerpTime));
@@ -87,28 +90,20 @@ namespace OperationPolygon.Combat
                 controller.SetMouseSensitivityFraction(defaultMouseSensitivity);
                 controller.SetRotationWithMovement(true);
                 aimRigWeight = 0f;
+                isAiming = false;
                 crosshairAim.gameObject.SetActive(false);
                 crosshairHip.gameObject.SetActive(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * animLerpTime));
             }
-
-
-
-            //shoot mechanic - refactor and edit later
-            //this functionality is going into the weapon along with planned features such as
-            //weapon spread
-            //weapon damage
-            //fire rate
-            //mag size
-            //weapon will also handle all FX related to it
-            //projectile will trigger FX such as hit events and blood splatter.
-            if (inputs.shoot)
-            {
-                Shoot(mouseWorldPosition);
-            }
-
         }
-        private void Shoot(Vector3 mousePosition) //add this to the weapon system
+
+        public bool IsAiming() 
+        {
+            return isAiming;
+        }
+
+/*        private void Shoot(Vector3 mousePosition) //add this to the weapon system
+ *        Psuedocode left for reference
             //note to self - remove the pass-through Vector3. 
             //weapon namespace will have to rely heavily on the weapon system.
         {
@@ -116,7 +111,7 @@ namespace OperationPolygon.Combat
             Vector3 muzzleDirection = (mousePosition - muzzlePoint.position).normalized;
             Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
             inputs.shoot = false;
-        }
+        }*/
 
     }
 }

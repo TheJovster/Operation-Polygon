@@ -18,10 +18,18 @@ public class AimTarget : MonoBehaviour
 
     private void Update()
     {
-        Ray ray =  mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if(Physics.Raycast(ray, out RaycastHit hit)) 
+
+        aimPosVisual.position = GetMouseWorldPosition();
+    }
+
+    public Vector3 GetMouseWorldPosition() 
+    {
+        Ray ray = mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            aimPosVisual.position = hit.point;
+            return hit.point;
         }
+        else return Vector3.zero; 
+        //need to be wary of this one, if there's no collision the system will break completely.
     }
 }
