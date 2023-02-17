@@ -26,7 +26,7 @@ namespace OperationPolygon.Combat
 
         
 
-        private StarterAssetsInputs input;
+        private Inputs input;
 
         [Header("Variables")]
         [SerializeField] private float fireRate; //rate of fire of the weapon
@@ -39,7 +39,7 @@ namespace OperationPolygon.Combat
 
         private void Awake()
         {
-            input = GameObject.FindGameObjectWithTag("Player").GetComponent<StarterAssetsInputs>();
+            input = GameObject.FindGameObjectWithTag("Player").GetComponent<Inputs>();
             aimTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<AimTarget>();
             shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonShooterController>();
         }

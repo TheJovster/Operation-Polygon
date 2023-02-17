@@ -12,7 +12,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private CinemachineVirtualCamera aimCamera;
 
         //components
-        private StarterAssetsInputs input;
+        private Inputs input;
         private ThirdPersonController controller;
         [SerializeField] private Rig aimRig;
 
@@ -43,7 +43,7 @@ namespace OperationPolygon.Combat
 
         void Awake()
         {
-            input = GetComponent<StarterAssetsInputs>();
+            input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
             animator = GetComponent<Animator>();
         }

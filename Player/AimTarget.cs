@@ -8,12 +8,12 @@ public class AimTarget : MonoBehaviour
 {
     [SerializeField] private Camera mainCam;
     [SerializeField] private Transform aimPosVisual;
-    private StarterAssetsInputs input;
+    private Inputs input;
 
     private void Awake()
     {
         mainCam = Camera.main;
-        input = GetComponent<StarterAssetsInputs>();
+        input = GetComponent<Inputs>();
     }
 
     private void Update()
