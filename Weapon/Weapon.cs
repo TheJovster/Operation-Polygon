@@ -105,9 +105,7 @@ namespace OperationPolygon.Combat
             {
                 shooter.GetAnimator().Play(reloadAnimHash, 1);
             }
-            yield return new WaitForSeconds(shooter.GetAnimator().GetCurrentAnimatorClipInfo(0).Length); 
-            //I was being dumb - I had already set Reload anim as the current animation,
-            //therefore it's the current clip.
+            yield return new WaitForSeconds(2f);
             currentAmmoInMag = magSize;
             isReloading = false;
         }
