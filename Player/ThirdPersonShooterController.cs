@@ -102,6 +102,11 @@ namespace OperationPolygon.Combat
             return isAiming;
         }
 
+        public Animator GetAnimator() 
+        {
+            return animator;
+        }
+
 /*        private void Shoot(Vector3 mousePosition) //add this to the weapon system
  *        Psuedocode left for reference
             //note to self - remove the pass-through Vector3. 
