@@ -24,7 +24,7 @@ namespace OperationPolygon.Combat
         [Header("Audio FX Components")]
         [SerializeField] private AudioSource weaponAudioSource;
         [SerializeField] private AudioClip[] weaponShotSounds;
-        [SerializeField] private AudioClip weaponReloadSound;
+        [SerializeField] private AudioClip[] weaponReloadSounds;
         [SerializeField] private AudioClip weaponEmptySound;
 
 
@@ -41,6 +41,9 @@ namespace OperationPolygon.Combat
         [SerializeField]private int currentAmmoInMag;
 
         private bool isReloading = false;
+
+        private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
+        private float animTransitionTime = .25f; //using this value for Animator transition time.
 
         private void Awake()
         {
@@ -109,13 +112,15 @@ namespace OperationPolygon.Combat
 
         private IEnumerator ReloadAnimationWaitTime() 
         {
-            shooter.GetAnimator().Play(reloadAnimHash, 0);
+            shooter.GetAnimator().SetLayerWeight(2, 1f);
             if (shooter.IsAiming()) 
             {
-                shooter.GetAnimator().Play(reloadAnimHash, 1);
+                shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
             }
-            yield return new WaitForSeconds(2f);
+            shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
+            yield return new WaitForSeconds(1.6f);
             currentAmmoInMag = magSize;
+            shooter.GetAnimator().SetLayerWeight(2, 0f);
             isReloading = false;
         }
 
@@ -128,7 +133,6 @@ namespace OperationPolygon.Combat
             return currentAmmoInMag;
         }
 
-        //notes I left in ThirdPersonShooterController
         //shoot mechanic - refactor and edit later
         //this functionality is going into the weapon along with planned features such as
         //weapon spread
@@ -137,5 +141,21 @@ namespace OperationPolygon.Combat
         //mag size
         //weapon will also handle all FX related to it
         //projectile will trigger FX such as hit events and blood splatter.
+
+        //anim events - magic numbers are unavoidable here for now
+        public void PlayReloadStartSound() 
+        {
+            weaponAudioSource.PlayOneShot(weaponReloadSounds[0]);
+        }
+
+        public void PlayReloadMidSound() 
+        {
+            weaponAudioSource.PlayOneShot(weaponReloadSounds[1]);
+        }
+
+        public void PlayReloadEndSound() 
+        {
+            weaponAudioSource.PlayOneShot(weaponReloadSounds[2]);
+        }
     }
 }

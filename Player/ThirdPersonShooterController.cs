@@ -37,9 +37,7 @@ namespace OperationPolygon.Combat
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
 
-        //prefabs - weapon will handle this later
-        [SerializeField] private Transform muzzlePoint;
-        [SerializeField] private Transform bulletPrefab;
+        //components in children
 
         void Awake()
         {
@@ -120,5 +118,21 @@ namespace OperationPolygon.Combat
             inputs.shoot = false;
         }*/
 
+        //animation events
+
+        public void OnReloadStart() 
+        {
+            GetComponentInChildren<Weapon>().PlayReloadStartSound();
+        }
+
+        public void OnReloadMid() 
+        {
+            GetComponentInChildren<Weapon>().PlayReloadMidSound();
+        }
+
+        public void OnReloadEnd()
+        {
+            GetComponentInChildren<Weapon>().PlayReloadEndSound();
+        }
     }
 }
