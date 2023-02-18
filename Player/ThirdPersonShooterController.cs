@@ -53,7 +53,7 @@ namespace OperationPolygon.Combat
         {
             AimState();
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
-            Debug.Log(input.aim);
+            
         }
 
         private void AimState()

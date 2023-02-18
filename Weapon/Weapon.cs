@@ -1,11 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using StarterAssets;
-using UnityEngine.Windows;
-using UnityEngine.Timeline;
 using UnityEngine.InputSystem;
-using System;
 
 namespace OperationPolygon.Combat 
 {
@@ -23,8 +19,9 @@ namespace OperationPolygon.Combat
         [SerializeField] private ParticleSystem bulletEjectFX;
         [Header("Audio FX Components")]
         [SerializeField] private AudioSource weaponAudioSource;
-        [SerializeField] private AudioClip weaponShotSound;
+        [SerializeField] private AudioClip[] weaponShotSounds;
         [SerializeField] private AudioClip weaponReloadSound;
+        [SerializeField] private AudioClip weaponEmptySound;
 
 
         //input actions
@@ -47,6 +44,11 @@ namespace OperationPolygon.Combat
             playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
             aimTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<AimTarget>();
             shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonShooterController>();
+            inputActions = new InputActions();
+
+            inputActions.Player.Enable();
+            inputActions.Player.Shoot.performed += OnShoot;
+            inputActions.Player.Reload.performed += OnReload;
         }
 
         private void Start()
@@ -57,14 +59,6 @@ namespace OperationPolygon.Combat
 
         private void Update()
         {
-            if (input.shoot) 
-            {
-                OnShoot();
-            }
-            if (input.reload) 
-            {
-                OnReload();
-            }
 
             //I'm aware that if statements are not the optimal way to this.
             //Instead I should be subscribing and unsubscribing to events.
@@ -72,22 +66,26 @@ namespace OperationPolygon.Combat
             //Events instead of Messages. This will take a day or two, but I'm sure I can do it.
         }
 
-        public void OnShoot()
+        private void OnShoot(InputAction.CallbackContext context)
         {
-            if (shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
+            if (context.performed && shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
             {
-                Debug.Log("Pew pew");
+                Debug.Log(context);
                 Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
                 Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
+                AudioClip clipToPlay = weaponShotSounds[Random.Range(0, weaponShotSounds.Length)];
+                weaponAudioSource.PlayOneShot(clipToPlay);
                 muzzleFlashFX.Play();
                 bulletEjectFX.Play();
-                input.shoot = false;
                 currentAmmoInMag--;
             }
-
+            else if(context.performed && shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading) 
+            {
+                weaponAudioSource.PlayOneShot(weaponEmptySound);
+            }
         }
 
-        public void OnReload() 
+        public void OnReload(InputAction.CallbackContext context) 
         {
             //maths for max ammo in reserve, and logic, etc will go here.
             //current ammo in backpack
@@ -98,12 +96,11 @@ namespace OperationPolygon.Combat
             //if(current ammo in backpack == 0) return;
             //the reload system is very simple (for now), will try to add animations and anim rigging later.
             //if(currentAmmoInMag == mag size) return;
-
-            isReloading = true;
-            StartCoroutine(ReloadAnimationWaitTime());
-            Debug.Log(currentAmmoInMag);
-            input.reload = false;
-          
+            if (context.performed && currentAmmoInMag < magSize) 
+            {
+                isReloading = true;
+                StartCoroutine(ReloadAnimationWaitTime());
+            }
         }
 
         private IEnumerator ReloadAnimationWaitTime() 
