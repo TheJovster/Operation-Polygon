@@ -18,6 +18,8 @@ namespace OperationPolygon.Combat
         [SerializeField] private Projectile weaponProjectile; //the projectile used by the weapon.
         [SerializeField] private ThirdPersonShooterController shooter;
         [SerializeField] private AimTarget aimTarget;
+        private WeaponRecoilHandler recoilHandler;
+
         [Header("FX Components")]
         [SerializeField] private ParticleSystem muzzleFlashFX;
         [SerializeField] private ParticleSystem bulletEjectFX;
@@ -51,6 +53,7 @@ namespace OperationPolygon.Combat
             playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
             aimTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<AimTarget>();
             shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonShooterController>();
+            recoilHandler = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<WeaponRecoilHandler>();
             inputActions = new InputActions();
 
             inputActions.Player.Enable();
@@ -60,6 +63,7 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
+            
             currentAmmoInMag = magSize;
 
         }
@@ -77,9 +81,9 @@ namespace OperationPolygon.Combat
         {
             if (context.performed && shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
             {
-                Debug.Log(context);
                 Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
                 Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
+                recoilHandler.TriggerRecoil();
                 AudioClip clipToPlay = weaponShotSounds[Random.Range(0, weaponShotSounds.Length)];
                 weaponAudioSource.PlayOneShot(clipToPlay);
                 muzzleFlashFX.Play();
@@ -88,6 +92,7 @@ namespace OperationPolygon.Combat
             }
             else if(context.performed && shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading) 
             {
+                
                 weaponAudioSource.PlayOneShot(weaponEmptySound);
             }
         }
@@ -123,7 +128,6 @@ namespace OperationPolygon.Combat
             shooter.GetAnimator().SetLayerWeight(2, 0f);
             isReloading = false;
         }
-
 
 
         //public getter classes

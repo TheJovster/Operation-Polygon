@@ -3,6 +3,7 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine;
 using StarterAssets;
 using UnityEngine.UI;
+using UnityEditor.Timeline;
 
 namespace OperationPolygon.Combat 
 {
@@ -33,6 +34,7 @@ namespace OperationPolygon.Combat
 
         //serialized for testing
         [SerializeField]private bool isAiming = false;
+        [SerializeField]private bool shouldersSwapped = false;
 
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
@@ -50,6 +52,10 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
+            if (input.switchShoulders) 
+            {
+                
+            }
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
             
         }
@@ -79,9 +85,12 @@ namespace OperationPolygon.Combat
                 Vector3 aimTarget = mouseWorldPosition;
                 aimTarget.y = transform.position.y;
                 Vector3 aimDirection = (aimTarget - transform.position).normalized;
-
                 transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f); //bad practice here
 
+                if (input.switchShoulders) 
+                {
+                    ShoulderSwitch();
+                }
             }
             else
             {
@@ -95,6 +104,24 @@ namespace OperationPolygon.Combat
                 crosshairHip.gameObject.SetActive(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * animLerpTime));
             }
+        }
+
+        private void ShoulderSwitch() 
+        {
+            
+            shouldersSwapped = !shouldersSwapped;
+            Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+            if (!shouldersSwapped) 
+            {
+                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, 15f); //magic number - make exposed variables later
+                input.switchShoulders = false;
+            }
+            else if (shouldersSwapped) 
+            {
+                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, 15f);
+                input.switchShoulders = false;
+            }
+            
         }
 
         public bool IsAiming() 
