@@ -9,6 +9,10 @@ namespace OperationPolygon.Combat
     {
         private int reloadAnimHash = Animator.StringToHash("ReloadAnim");
 
+        [Header("Main Weapon Information")]
+        [SerializeField] private string weaponName;
+        [SerializeField] private WeaponClass weaponClass;
+
         [Header("Components")]
         [SerializeField] private Transform muzzlePoint; //the bullet spawns at this location.
         [SerializeField] private Projectile weaponProjectile; //the projectile used by the weapon.
