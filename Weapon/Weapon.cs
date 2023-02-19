@@ -21,6 +21,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private ThirdPersonShooterController shooter;
         [SerializeField] private AimTarget aimTarget;
         private WeaponRecoilHandler recoilHandler;
+        private WeaponSpread spreadHandler;
 
         [Header("FX Components")]
         [SerializeField] private ParticleSystem muzzleFlashFX;
@@ -40,13 +41,12 @@ namespace OperationPolygon.Combat
         [Header("Variables")]
         [SerializeField] private bool isSemi = false;
         [SerializeField] private float fireRate; //rate of fire of the weapon
+        private float fireRateWhenEmpty = .5f; //this is going to slow down the playing of the PlayEmptyAndReturn method.
         private float timeSinceLastShot;
         [SerializeField] private float damageToDeal;
         [SerializeField] private int magSize = 30;
         //serialized for testing purposes
         [SerializeField] private int currentAmmoInMag;
-
-
 
         private bool isReloading = false;
 
@@ -59,12 +59,14 @@ namespace OperationPolygon.Combat
             playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
             aimTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<AimTarget>();
             shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonShooterController>();
-            recoilHandler = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<WeaponRecoilHandler>();
+            recoilHandler = GetComponent<WeaponRecoilHandler>();
+            spreadHandler = GetComponent<WeaponSpread>();
             inputActions = new InputActions();
 
             inputActions.Player.Enable();
             inputActions.Player.Shoot.performed += OnShoot;
             inputActions.Player.Reload.performed += OnReload;
+            inputActions.Player.Reload.canceled -= OnReload;
         }
 
         private void Start()
@@ -79,11 +81,15 @@ namespace OperationPolygon.Combat
         {
             timeSinceLastShot += Time.deltaTime; //this is a constant timer that keeps updating timeSinceLastShot.
 
-            if (!isSemi && input.shoot) 
+            if (!isSemi && input.shoot)
             {
                 AutomaticFire();
             }
 
+            if (!input.shoot) 
+            {
+                ResetMuzzlePointRotation();
+            }
         }
 
         private void AutomaticFire()
@@ -92,7 +98,7 @@ namespace OperationPolygon.Combat
             {
                 ShootAction();
             }
-            else if(currentAmmoInMag <= 0)
+            else if (currentAmmoInMag <= 0 && timeSinceLastShot >= fireRateWhenEmpty)
             {
                 PlayWeaponEmptyAndReturn();
             }
@@ -101,12 +107,19 @@ namespace OperationPolygon.Combat
         private void PlayWeaponEmptyAndReturn()
         {
             weaponAudioSource.PlayOneShot(weaponEmptySound);
+            timeSinceLastShot = 0f;
+            ResetMuzzlePointRotation();
             return;
+        }
+
+        private void ResetMuzzlePointRotation()
+        {
+            muzzlePoint.localEulerAngles = Vector3.zero;
         }
 
         private void OnShoot(InputAction.CallbackContext context)
         {
-            if (isSemi) 
+            if (isSemi)
             {
                 if (shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
                 {
@@ -123,9 +136,10 @@ namespace OperationPolygon.Combat
         }
 
         private void ShootAction() //shoot action contains all of the logic for shooting.
-        { 
+        {
             timeSinceLastShot = 0;
             Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
+            muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint);
             Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
             recoilHandler.TriggerRecoil();
             AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
@@ -135,7 +149,7 @@ namespace OperationPolygon.Combat
             currentAmmoInMag--;
         }
 
-        public void OnReload(InputAction.CallbackContext context) 
+        public void OnReload(InputAction.CallbackContext context)
         {
             //maths for max ammo in reserve, and logic, etc will go here.
             //current ammo in backpack
@@ -146,17 +160,17 @@ namespace OperationPolygon.Combat
             //if(current ammo in backpack == 0) return;
             //the reload system is very simple (for now), will try to add animations and anim rigging later.
             //if(currentAmmoInMag == mag size) return;
-            if (context.performed && currentAmmoInMag < magSize) 
+            if (context.performed && currentAmmoInMag < magSize)
             {
                 isReloading = true;
                 StartCoroutine(ReloadAnimationWaitTime());
             }
         }
 
-        private IEnumerator ReloadAnimationWaitTime() 
+        private IEnumerator ReloadAnimationWaitTime()
         {
             shooter.GetAnimator().SetLayerWeight(2, 1f);
-            if (shooter.IsAiming()) 
+            if (shooter.IsAiming())
             {
                 shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
             }
@@ -170,9 +184,19 @@ namespace OperationPolygon.Combat
 
         //public getter classes
 
-        public int GetCurrentAmmoInMag() 
+        public int GetCurrentAmmoInMag()
         {
             return currentAmmoInMag;
+        }
+
+        public float GetFireRate()
+        {
+            return fireRate;
+        }
+
+        public Transform GetMuzzlePosition() 
+        {
+            return muzzlePoint;
         }
 
         //shoot mechanic - refactor and edit later
