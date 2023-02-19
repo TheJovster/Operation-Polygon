@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using StarterAssets;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
+using System;
 
 namespace OperationPolygon.Combat 
 {
@@ -36,11 +38,15 @@ namespace OperationPolygon.Combat
         private PlayerInput playerInput;
 
         [Header("Variables")]
+        [SerializeField] private bool isSemi = false;
         [SerializeField] private float fireRate; //rate of fire of the weapon
+        private float timeSinceLastShot;
         [SerializeField] private float damageToDeal;
         [SerializeField] private int magSize = 30;
         //serialized for testing purposes
-        [SerializeField]private int currentAmmoInMag;
+        [SerializeField] private int currentAmmoInMag;
+
+
 
         private bool isReloading = false;
 
@@ -63,38 +69,70 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
-            
+
             currentAmmoInMag = magSize;
+            timeSinceLastShot = fireRate;
 
         }
 
         private void Update()
         {
+            timeSinceLastShot += Time.deltaTime; //this is a constant timer that keeps updating timeSinceLastShot.
 
-            //I'm aware that if statements are not the optimal way to this.
-            //Instead I should be subscribing and unsubscribing to events.
-            //TODO: Change the Input system functionality - 
-            //Events instead of Messages. This will take a day or two, but I'm sure I can do it.
+            if (!isSemi && input.shoot) 
+            {
+                AutomaticFire();
+            }
+
+        }
+
+        private void AutomaticFire()
+        {
+            if (currentAmmoInMag > 0 && timeSinceLastShot >= fireRate)
+            {
+                ShootAction();
+            }
+            else if(currentAmmoInMag <= 0)
+            {
+                PlayWeaponEmptyAndReturn();
+            }
+        }
+
+        private void PlayWeaponEmptyAndReturn()
+        {
+            weaponAudioSource.PlayOneShot(weaponEmptySound);
+            return;
         }
 
         private void OnShoot(InputAction.CallbackContext context)
         {
-            if (context.performed && shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
+            if (isSemi) 
             {
-                Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
-                Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
-                recoilHandler.TriggerRecoil();
-                AudioClip clipToPlay = weaponShotSounds[Random.Range(0, weaponShotSounds.Length)];
-                weaponAudioSource.PlayOneShot(clipToPlay);
-                muzzleFlashFX.Play();
-                bulletEjectFX.Play();
-                currentAmmoInMag--;
+                if (shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
+                {
+                    if (context.performed && currentAmmoInMag > 0 && timeSinceLastShot >= fireRate) //for some reason, this was the only way I found to make the weapon fire automatically
+                    {
+                        ShootAction();
+                    }
+                }
+                if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading)
+                {
+                    PlayWeaponEmptyAndReturn();
+                }
             }
-            else if(context.performed && shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading) 
-            {
-                
-                weaponAudioSource.PlayOneShot(weaponEmptySound);
-            }
+        }
+
+        private void ShootAction() //shoot action contains all of the logic for shooting.
+        { 
+            timeSinceLastShot = 0;
+            Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
+            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
+            recoilHandler.TriggerRecoil();
+            AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
+            weaponAudioSource.PlayOneShot(clipToPlay);
+            muzzleFlashFX.Play();
+            bulletEjectFX.Play();
+            currentAmmoInMag--;
         }
 
         public void OnReload(InputAction.CallbackContext context) 

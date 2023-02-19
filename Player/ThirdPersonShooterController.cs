@@ -3,7 +3,6 @@ using UnityEngine.Animations.Rigging;
 using UnityEngine;
 using StarterAssets;
 using UnityEngine.UI;
-using UnityEditor.Timeline;
 
 namespace OperationPolygon.Combat 
 {
@@ -52,9 +51,9 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-            if (input.switchShoulders) 
+            if (input.aim && input.switchShoulders) 
             {
-                
+                ShoulderSwitch();
             }
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
             
@@ -86,11 +85,6 @@ namespace OperationPolygon.Combat
                 aimTarget.y = transform.position.y;
                 Vector3 aimDirection = (aimTarget - transform.position).normalized;
                 transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f); //bad practice here
-
-                if (input.switchShoulders) 
-                {
-                    ShoulderSwitch();
-                }
             }
             else
             {
@@ -113,12 +107,12 @@ namespace OperationPolygon.Combat
             Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
             if (!shouldersSwapped) 
             {
-                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, 15f); //magic number - make exposed variables later
+                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, 10f); //magic number - make exposed variables later
                 input.switchShoulders = false;
             }
             else if (shouldersSwapped) 
             {
-                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, 15f);
+                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, 10f);
                 input.switchShoulders = false;
             }
             
