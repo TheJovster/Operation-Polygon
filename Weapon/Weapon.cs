@@ -140,7 +140,7 @@ namespace OperationPolygon.Combat
             timeSinceLastShot = 0;
             Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
             muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint);
-            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
+            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward));
             recoilHandler.TriggerRecoil();
             AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
             weaponAudioSource.PlayOneShot(clipToPlay);

@@ -46,6 +46,7 @@ namespace OperationPolygon.Combat
             return muzzlePos.localEulerAngles + randomRotation;
 
             //NOTE TO SELF, TODO
+            //weapon spread is not as noticeable as it should be. I need to do some research into this.
             //As the functionality and complexity expands, I'll have to add:
             //checks for crouching and movement
             //checks for crouching and aiming
