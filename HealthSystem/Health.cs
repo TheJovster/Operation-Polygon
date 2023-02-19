@@ -17,8 +17,6 @@ namespace OperationPolygon.Core
         //components
         [Header("Components")]
         [SerializeField] private AudioSource audioSource;
-        [SerializeField] private SkinnedMeshRenderer meshRenderer;
-
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
         [SerializeField] private AudioClip onDestroySFX;
@@ -55,7 +53,7 @@ namespace OperationPolygon.Core
             currentHealth = 0;
             isAlive = false;
             audioSource.PlayOneShot(onDestroySFX);
-            var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity);
+            var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
             Destroy(fxInstace, 1f);
             Debug.Log(gameObject.name + " has taken too much damage and needs a break.");
             transform.GetComponent<Collider>().enabled = false;
@@ -68,7 +66,8 @@ namespace OperationPolygon.Core
             {
                 transform.GetComponent<MeshRenderer>().enabled = false;
             }
-            Destroy(gameObject, onDestroySFX.length + .05f);
+            Destroy(gameObject, onDestroySFX.length + .1f);
+            //TODO: Add Ragdoll functionality
         }
 
     }
