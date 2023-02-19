@@ -138,9 +138,9 @@ namespace OperationPolygon.Combat
         private void ShootAction() //shoot action contains all of the logic for shooting.
         {
             timeSinceLastShot = 0;
-            Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized;
-            muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint);
-            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward));
+            Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
+            muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint); //needs further testing
+            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward)); //needs further testing
             recoilHandler.TriggerRecoil();
             AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
             weaponAudioSource.PlayOneShot(clipToPlay);
