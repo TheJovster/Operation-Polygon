@@ -19,6 +19,7 @@ namespace OperationPolygon.Core
         [SerializeField] private AudioSource audioSource;
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
+        [SerializeField] private GameObject ragdollPrefab;
         [SerializeField] private AudioClip onDestroySFX;
         //sound
         [Header("Additive Variables")]
@@ -37,11 +38,15 @@ namespace OperationPolygon.Core
 
         public void TakeDamage(int damageToTake) 
         {
-            currentHealth -= damageToTake;
+            if (isAlive) 
+            {
+                currentHealth -= damageToTake;
+            }
             //particle and sounds effects
             //animation triggers
             if(currentHealth <= 0) 
             {
+                isAlive = false;
                 Die();
             }
         }
@@ -50,23 +55,28 @@ namespace OperationPolygon.Core
 
         private void Die() 
         {
+
             currentHealth = 0;
-            isAlive = false;
             audioSource.PlayOneShot(onDestroySFX);
             var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
             Destroy(fxInstace, 1f);
             Debug.Log(gameObject.name + " has taken too much damage and needs a break.");
-            transform.GetComponent<Collider>().enabled = false;
+            transform.GetComponent<CapsuleCollider>().enabled = false;
             if (isHumanoid) 
             {
                 SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
                 meshRenderer.enabled = false;
+                var ragdoll = Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
+                foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
+                {
+                    rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
+                }
             }
             else if (!isHumanoid) 
             {
                 transform.GetComponent<MeshRenderer>().enabled = false;
             }
-            Destroy(gameObject, onDestroySFX.length + .1f);
+            Destroy(gameObject, onDestroySFX.length + .05f);
             //TODO: Add Ragdoll functionality
         }
 
