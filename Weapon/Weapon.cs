@@ -43,7 +43,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private float fireRate; //rate of fire of the weapon
         private float fireRateWhenEmpty = .5f; //this is going to slow down the playing of the PlayEmptyAndReturn method.
         private float timeSinceLastShot;
-        [SerializeField] private float damageToDeal;
+        [SerializeField] private int weaponDamage;
         [SerializeField] private int magSize = 30;
         //serialized for testing purposes
         [SerializeField] private int currentAmmoInMag;
@@ -81,7 +81,7 @@ namespace OperationPolygon.Combat
         {
             timeSinceLastShot += Time.deltaTime; //this is a constant timer that keeps updating timeSinceLastShot.
 
-            if (!isSemi && input.shoot)
+            if (!isSemi && input.shoot && shooter.IsAiming())
             {
                 AutomaticFire();
             }
@@ -192,6 +192,11 @@ namespace OperationPolygon.Combat
         public float GetFireRate()
         {
             return fireRate;
+        }
+
+        public int GetWeaponDamage() 
+        {
+            return weaponDamage;
         }
 
         public Transform GetMuzzlePosition() 

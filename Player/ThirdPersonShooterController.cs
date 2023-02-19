@@ -45,6 +45,8 @@ namespace OperationPolygon.Combat
             input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
             animator = GetComponent<Animator>();
+
+            
         }
 
         // Update is called once per frame
@@ -99,6 +101,8 @@ namespace OperationPolygon.Combat
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * animLerpTime));
             }
         }
+        //why add crouch here? Because the ThirdPersonController doesn't have an animator reference on it.
+        //it would be more 
 
         private void ShoulderSwitch() 
         {
@@ -116,6 +120,12 @@ namespace OperationPolygon.Combat
                 input.switchShoulders = false;
             }
             
+        }
+
+        private void OnCrouch()
+        {
+
+
         }
 
         public bool IsAiming() 
