@@ -162,11 +162,12 @@ namespace OperationPolygon.Combat
             //if(current ammo in backpack == 0) return;
             //the reload system is very simple (for now), will try to add animations and anim rigging later.
             //if(currentAmmoInMag == mag size) return;
-            if (context.performed && currentAmmoInMag < magSize)
+            if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmInInventory() > 0)
             {
                 isReloading = true;
                 StartCoroutine(ReloadAnimationWaitTime());
             }
+            else return;
         }
 
         private IEnumerator ReloadAnimationWaitTime()
@@ -178,7 +179,16 @@ namespace OperationPolygon.Combat
             }
             shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
             yield return new WaitForSeconds(1.6f);
-            currentAmmoInMag = magSize;
+            int ammoToRemove = magSize - currentAmmoInMag;
+            if(ammoInventory.GetCurrentAmmInInventory() >= magSize) 
+            {
+                currentAmmoInMag = magSize;
+            }
+            else if(ammoInventory.GetCurrentAmmInInventory() < magSize) 
+            {
+                currentAmmoInMag = ammoInventory.GetCurrentAmmInInventory();
+            }
+            ammoInventory.RemoveAmmo(ammoToRemove);
             shooter.GetAnimator().SetLayerWeight(2, 0f);
             isReloading = false;
         }
