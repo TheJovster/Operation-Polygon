@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 //I decided to put the Health component into the core namespace
@@ -19,8 +20,10 @@ namespace OperationPolygon.Core
         [SerializeField] private AudioSource audioSource;
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
+        [SerializeField] private GameObject onHitParticle;
         [SerializeField] private GameObject ragdollPrefab;
         [SerializeField] private AudioClip onDestroySFX;
+        [SerializeField] private AudioClip[] onHitSFX;
         //sound
         [Header("Additive Variables")]
         [SerializeField] private Vector3 VFXOffset;
@@ -60,8 +63,7 @@ namespace OperationPolygon.Core
             audioSource.PlayOneShot(onDestroySFX);
             var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
             Destroy(fxInstace, 1f);
-            Debug.Log(gameObject.name + " has taken too much damage and needs a break.");
-            transform.GetComponent<CapsuleCollider>().enabled = false;
+            transform.GetComponent<Collider>().enabled = false; //had to change it to a genral query.
             if (isHumanoid) 
             {
                 SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
@@ -78,6 +80,19 @@ namespace OperationPolygon.Core
             }
             Destroy(gameObject, onDestroySFX.length + .05f);
             //TODO: Add Ragdoll functionality
+            //TODO Done: Ragdolls added.
+        }
+
+        private void OnCollisionEnter(Collision other) 
+            //when hit, instantiates the hit effects and then destroys the instance after the assigned duration
+        {
+            if(other.gameObject.tag == "Projectile") 
+            {
+                var instance = Instantiate(onHitParticle, other.transform.position, Quaternion.identity);
+                Destroy(instance, instance.GetComponent<ParticleSystem>().main.duration);
+                int onHitSFXIndex = Random.Range(0, onHitSFX.Length);
+                audioSource.PlayOneShot(onHitSFX[onHitSFXIndex]);
+            }
         }
 
     }
