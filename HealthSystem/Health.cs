@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 //I decided to put the Health component into the core namespace
 //because I have a hunch that a few more scripts are going to rely on it.
@@ -67,6 +68,8 @@ namespace OperationPolygon.Core
             if (isHumanoid) 
             {
                 SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
+                NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
+                navMesh.enabled = false;
                 meshRenderer.enabled = false;
                 var ragdoll = Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
                 foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
@@ -93,6 +96,12 @@ namespace OperationPolygon.Core
                 int onHitSFXIndex = Random.Range(0, onHitSFX.Length);
                 audioSource.PlayOneShot(onHitSFX[onHitSFXIndex]);
             }
+        }
+
+        //public getters
+        public bool IsAlive() 
+        {
+            return isAlive;
         }
 
     }
