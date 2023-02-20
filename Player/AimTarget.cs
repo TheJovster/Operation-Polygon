@@ -18,7 +18,6 @@ public class AimTarget : MonoBehaviour
 
     private void Update()
     {
-
         aimPosVisual.position = GetMouseWorldPosition();
     }
 
