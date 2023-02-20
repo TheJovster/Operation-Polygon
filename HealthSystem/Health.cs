@@ -71,7 +71,7 @@ namespace OperationPolygon.Core
                 NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
                 navMesh.enabled = false;
                 meshRenderer.enabled = false;
-                var ragdoll = Instantiate(ragdollPrefab, transform.position, Quaternion.identity);
+                var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
                 foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
                 {
                     rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
