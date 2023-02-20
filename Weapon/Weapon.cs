@@ -14,6 +14,7 @@ namespace OperationPolygon.Combat
         [Header("Main Weapon Information")]
         [SerializeField] private string weaponName;
         [SerializeField] private WeaponClass weaponClass;
+        private AmmoInventory ammoInventory;
 
         [Header("Components")]
         [SerializeField] private Transform muzzlePoint; //the bullet spawns at this location.
@@ -55,10 +56,11 @@ namespace OperationPolygon.Combat
 
         private void Awake()
         {
-            input = GameObject.FindGameObjectWithTag("Player").GetComponent<Inputs>();
-            playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
-            aimTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<AimTarget>();
-            shooter = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonShooterController>();
+            input = GetComponentInParent<Inputs>();
+            playerInput = GetComponentInParent<PlayerInput>();
+            aimTarget = GetComponentInParent<AimTarget>();
+            shooter = GetComponentInParent<ThirdPersonShooterController>();
+            ammoInventory = GetComponentInParent<AmmoInventory>();
             recoilHandler = GetComponent<WeaponRecoilHandler>();
             spreadHandler = GetComponent<WeaponSpread>();
             inputActions = new InputActions();

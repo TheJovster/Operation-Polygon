@@ -40,13 +40,14 @@ namespace OperationPolygon.AI.Control
 
         void Update()
         {
-            if (detector.GetAggro()) 
+            HandleAnimation();
+            if (detector.GetAggro() && health.IsAlive())
             {
                 LookAtTarget();
                 MoveToTarget();
                 //move to target
             }
-            
+            else return;
         }
 
         private Vector3 GetLookAtPosition()
