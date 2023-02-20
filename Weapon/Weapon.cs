@@ -162,7 +162,7 @@ namespace OperationPolygon.Combat
             //if(current ammo in backpack == 0) return;
             //the reload system is very simple (for now), will try to add animations and anim rigging later.
             //if(currentAmmoInMag == mag size) return;
-            if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmInInventory() > 0)
+            if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmoInInventory() > 0)
             {
                 isReloading = true;
                 StartCoroutine(ReloadAnimationWaitTime());
@@ -179,20 +179,42 @@ namespace OperationPolygon.Combat
             }
             shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
             yield return new WaitForSeconds(1.6f);
-            int ammoToRemove = magSize - currentAmmoInMag;
-            if(ammoInventory.GetCurrentAmmInInventory() >= magSize) 
-            {
-                currentAmmoInMag = magSize;
-            }
-            else if(ammoInventory.GetCurrentAmmInInventory() < magSize) 
-            {
-                currentAmmoInMag = ammoInventory.GetCurrentAmmInInventory();
-            }
-            ammoInventory.RemoveAmmo(ammoToRemove);
+            AmmoRemovalCalculation();
             shooter.GetAnimator().SetLayerWeight(2, 0f);
             isReloading = false;
         }
 
+        //in reality this is a simple arithmetic + conditionals
+        //could do this with a switch statement too, but dammit, I hate switch statements.
+
+        private void AmmoRemovalCalculation() 
+        {
+            int ammoToRemove = magSize - currentAmmoInMag;
+            if (ammoInventory.GetCurrentAmmoInInventory() >= magSize)
+            {
+                currentAmmoInMag = magSize;
+            }
+            else if (ammoInventory.GetCurrentAmmoInInventory() < magSize)
+            {
+                if (currentAmmoInMag + ammoInventory.GetCurrentAmmoInInventory() > magSize ||
+                    currentAmmoInMag + ammoInventory.GetCurrentAmmoInInventory() == magSize)
+                {
+                    int conditionalAmmo_1 = magSize - currentAmmoInMag;
+                    ammoInventory.RemoveAmmo(conditionalAmmo_1);
+                    currentAmmoInMag = magSize;
+                    return;
+                }
+                else if(currentAmmoInMag + ammoInventory.GetCurrentAmmoInInventory() < magSize) 
+                {
+                    int conditionalAmmo_2 = currentAmmoInMag;
+                    currentAmmoInMag = conditionalAmmo_2 + ammoInventory.GetCurrentAmmoInInventory();
+                    ammoInventory.RemoveAmmo(ammoInventory.GetCurrentAmmoInInventory());
+                    return;
+                }
+                currentAmmoInMag = ammoInventory.GetCurrentAmmoInInventory();
+            }
+            ammoInventory.RemoveAmmo(ammoToRemove);
+        }
 
         //public getter classes
 

@@ -22,6 +22,6 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         ammoCount.text = currentWeapon.GetCurrentAmmoInMag().ToString();
-        ammoInInventoryCount.text = ammoInventory.GetCurrentAmmInInventory().ToString();
+        ammoInInventoryCount.text = ammoInventory.GetCurrentAmmoInInventory().ToString();
     }
 }

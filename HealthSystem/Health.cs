@@ -98,6 +98,15 @@ namespace OperationPolygon.Core
             }
         }
 
+        public void AddHealth(int healthToAdd) 
+        {
+            currentHealth += healthToAdd;
+            if(currentHealth >= maxHealth) 
+            {
+                currentHealth = maxHealth;
+            }
+        }
+
         //public getters
         public bool IsAlive() 
         {

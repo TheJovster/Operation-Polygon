@@ -26,10 +26,14 @@ namespace OperationPolygon.Combat
         public void RemoveAmmo(int ammoToRemove) 
         {
             currentAmmoInInventory -= ammoToRemove;
+            if(currentAmmoInInventory < 0) 
+            {
+                currentAmmoInInventory = 0;
+            }
         }
 
 
-        public int GetCurrentAmmInInventory() 
+        public int GetCurrentAmmoInInventory() 
         {
             return currentAmmoInInventory;
         }
