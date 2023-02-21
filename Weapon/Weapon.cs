@@ -11,9 +11,10 @@ namespace OperationPolygon.Combat
     {
         private int reloadAnimHash = Animator.StringToHash("ReloadAnim");
 
-        [Header("Main Weapon Information")]
+        [Header("Main Weapon Information & Overrides")]
         [SerializeField] private string weaponName;
         [SerializeField] private WeaponClass weaponClass;
+        [SerializeField] private AnimatorOverrideController animOverride;
         private AmmoInventory ammoInventory;
 
         [Header("Components")]
@@ -73,9 +74,12 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
-
             currentAmmoInMag = magSize;
             timeSinceLastShot = fireRate;
+            if (animOverride != null)
+            {
+                shooter.GetAnimator().runtimeAnimatorController = animOverride;
+            }
 
         }
 
@@ -186,7 +190,6 @@ namespace OperationPolygon.Combat
 
         //in reality this is a simple arithmetic + conditionals
         //could do this with a switch statement too, but dammit, I hate switch statements.
-
         private void AmmoRemovalCalculation() 
         {
             int ammoToRemove = magSize - currentAmmoInMag;

@@ -42,11 +42,9 @@ namespace OperationPolygon.Combat
 
         void Awake()
         {
+            animator = GetComponent<Animator>();
             input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
-            animator = GetComponent<Animator>();
-
-            
         }
 
         // Update is called once per frame

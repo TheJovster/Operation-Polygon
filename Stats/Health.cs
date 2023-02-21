@@ -19,6 +19,7 @@ namespace OperationPolygon.Core
         //components
         [Header("Components")]
         [SerializeField] private AudioSource audioSource;
+        private Animator animator;
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
         [SerializeField] private GameObject onHitParticle;
@@ -33,6 +34,7 @@ namespace OperationPolygon.Core
         {
             currentHealth = maxHealth;
             audioSource = GetComponent<AudioSource>();
+            animator = GetComponent<Animator>();
         }
 
         private void Update()
@@ -45,12 +47,15 @@ namespace OperationPolygon.Core
             if (isAlive) 
             {
                 currentHealth -= damageToTake;
+                animator.SetTrigger("GetHit");
+                Debug.Log(gameObject.name + " has taken " + damageToTake + " damage.");
             }
             //particle and sounds effects
             //animation triggers
             if(currentHealth <= 0) 
             {
                 isAlive = false;
+                Debug.Log(gameObject.name + " has died.");
                 Die();
             }
         }
@@ -104,6 +109,7 @@ namespace OperationPolygon.Core
             if(currentHealth >= maxHealth) 
             {
                 currentHealth = maxHealth;
+                
             }
         }
 

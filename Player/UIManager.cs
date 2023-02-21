@@ -6,7 +6,7 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]private Weapon currentWeapon; //probably not the best practice, but this is done for testing purposes and will be refactored later.
+    private Weapon currentWeapon; //probably not the best practice, but this is done for testing purposes and will be refactored later.
     [SerializeField] private TextMeshProUGUI ammoCount; //refactor names and everything later.
     [SerializeField] private TextMeshProUGUI ammoInInventoryCount;
 
@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        currentWeapon = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>();
         ammoInventory = GetComponent<AmmoInventory>();
     }
 

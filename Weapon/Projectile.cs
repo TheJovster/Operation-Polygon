@@ -9,6 +9,7 @@ namespace OperationPolygon.Combat
     public class Projectile : MonoBehaviour
     {
         [SerializeField] private float speed = 10f;
+        [SerializeField] private GameObject hitGenericParticleFX;
 
         private Rigidbody rigidBody;
         private Weapon weapon;
@@ -16,6 +17,7 @@ namespace OperationPolygon.Combat
         private void Awake()
         {
             rigidBody = GetComponent<Rigidbody>();
+
         }
 
         private void Start()
@@ -42,6 +44,8 @@ namespace OperationPolygon.Combat
             }
             else 
             {
+                var hitFXInstance = Instantiate(hitGenericParticleFX, transform.position, Quaternion.identity);
+                Destroy(hitFXInstance, hitFXInstance.GetComponent<ParticleSystem>().main.duration);
                 Destroy(this.gameObject);
             }
         }
