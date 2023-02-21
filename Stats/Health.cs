@@ -11,7 +11,7 @@ namespace OperationPolygon.Core
 {
     public class Health : MonoBehaviour 
     {
-        [SerializeField] private int currentHealth; //ints are cheaper than floats
+        [SerializeField] private int currentHealth = 100; //ints are cheaper than floats
         [SerializeField] private int maxHealth;
         [SerializeField] private bool isAlive = true; //serialize field for testing purposes - is alive is going to be used A LOT later on
         [SerializeField] private bool isHumanoid = true;
@@ -111,6 +111,12 @@ namespace OperationPolygon.Core
                 currentHealth = maxHealth;
                 
             }
+        }
+
+        public float GetHealthPercentage() 
+        {
+            float healthPercentage = (float)currentHealth / (float)maxHealth;
+            return healthPercentage;
         }
 
         //public getters

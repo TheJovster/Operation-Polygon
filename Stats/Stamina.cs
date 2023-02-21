@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class Stamina : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private int currentStamina;
+    [SerializeField] private int maxStamina = 100;
+
+    private void Awake()
     {
-        
+        currentStamina = maxStamina;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        ReplenishStamina();
+    }
+
+    public void DrainStamina() 
+    {
+
+    }
+
+    private void ReplenishStamina() 
+    {
+
+    }
+
+    public float GetStaminaPercentage() 
+    {
+        float percentage = currentStamina / maxStamina;
+        return percentage;
     }
 }
