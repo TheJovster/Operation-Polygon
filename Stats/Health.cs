@@ -30,6 +30,12 @@ namespace OperationPolygon.Core
         [Header("Additive Variables")]
         [SerializeField] private Vector3 VFXOffset;
 
+        
+        private int takeDamageAnimHash = Animator.StringToHash("GetHit");
+
+        [Header("NPC Variables")]
+        [SerializeField] private float staminaToAdd = 5f;
+
         private void Awake()
         {
             currentHealth = maxHealth;
@@ -48,6 +54,17 @@ namespace OperationPolygon.Core
             {
                 currentHealth -= damageToTake;
                 animator.SetTrigger("GetHit");
+                if(this.gameObject.tag == "Enemy") 
+                {
+                    GameObject.FindGameObjectWithTag("Player").
+                        GetComponentInChildren<Stamina>().
+                        RegenStamina(staminaToAdd);
+                }
+                else if(this.gameObject.tag == "Player") 
+                {
+                    onHitParticle.GetComponent<ParticleSystem>().Play();
+                    StartCoroutine(PlayerTriggerGetHit());
+                }
                 Debug.Log(gameObject.name + " has taken " + damageToTake + " damage.");
             }
             //particle and sounds effects
@@ -64,7 +81,6 @@ namespace OperationPolygon.Core
 
         private void Die() 
         {
-
             currentHealth = 0;
             audioSource.PlayOneShot(onDestroySFX);
             var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
@@ -72,21 +88,32 @@ namespace OperationPolygon.Core
             transform.GetComponent<Collider>().enabled = false; //had to change it to a genral query.
             if (isHumanoid) 
             {
-                SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
-                NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
-                navMesh.enabled = false;
-                meshRenderer.enabled = false;
-                var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
-                foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
+                if(gameObject.tag == "Player") 
                 {
-                    rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
+                    animator.SetBool("Die", true);
+                    //game over functionality
                 }
+                if(gameObject.tag != "Player") 
+                {
+                    SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
+                    NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
+                    navMesh.enabled = false;
+                    meshRenderer.enabled = false;
+                    var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
+                    foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
+                    {
+                        rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
+                        Destroy(gameObject, onDestroySFX.length + .05f);
+                    }
+                }
+
             }
             else if (!isHumanoid) 
             {
                 transform.GetComponent<MeshRenderer>().enabled = false;
+                Destroy(gameObject, onDestroySFX.length + .05f);
             }
-            Destroy(gameObject, onDestroySFX.length + .05f);
+            
             //TODO: Add Ragdoll functionality
             //TODO Done: Ragdolls added.
         }
@@ -125,6 +152,14 @@ namespace OperationPolygon.Core
             return isAlive;
         }
 
+        //player-specific coroutines
+        private IEnumerator PlayerTriggerGetHit() 
+        {
+            animator.SetLayerWeight(2, 1);
+            animator.Play(takeDamageAnimHash, 2);
+            yield return new WaitForSeconds(0.766f);
+            animator.SetLayerWeight(2, 0);
+        }
     }
 
 }

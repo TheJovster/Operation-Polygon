@@ -21,7 +21,8 @@ namespace OperationPolygon.AI.Control
         private string animSpeedID = "Speed";
         private int animSpeedHash;
         //serialized variables
-
+        [SerializeField] private float attackRange;
+        [SerializeField] private int attackDamage = 10;
         //public variables
 
         void Awake()
@@ -63,15 +64,44 @@ namespace OperationPolygon.AI.Control
 
         private void MoveToTarget() 
         {
-            navMesh.SetDestination(target.position);
+            if(DistanceToTarget() > attackRange) 
+            {
+                navMesh.isStopped = false;
+                navMesh.SetDestination(target.position);
+            }
+            if(DistanceToTarget() <= attackRange) 
+            {
+                AttackBehaviour();
+            }
+        }
+
+        private float DistanceToTarget() 
+        {
+            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+            return distanceToTarget;
+        }
+
+        private void AttackBehaviour() 
+        {
+            if (target.GetComponent<Health>().IsAlive()) 
+            {
+                animator.SetTrigger("Attack");
+            }
+            //else { feeding logic }
         }
 
         //animation handling and events
         private void HandleAnimation() 
         {
             animator.SetFloat(animSpeedHash, navMesh.velocity.magnitude);
+        }
 
-
+        public void OnAttack() 
+        {
+            if(DistanceToTarget() <= attackRange) 
+            {
+                target.GetComponent<Health>().TakeDamage(attackDamage);
+            }
         }
     }
 }

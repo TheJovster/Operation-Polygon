@@ -1,35 +1,107 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using StarterAssets;
 
-public class Stamina : MonoBehaviour
+namespace OperationPolygon.Core 
 {
-    [SerializeField] private int currentStamina;
-    [SerializeField] private int maxStamina = 100;
-
-    private void Awake()
+    public class Stamina : MonoBehaviour
     {
-        currentStamina = maxStamina;
-    }
+        [SerializeField] private float currentStamina;
+        [SerializeField] private float maxStamina = 100f;
+        [SerializeField] private float walkDrainRate = 3f;
+        [SerializeField] private float runDrainRate = 6f;
+        [SerializeField] private float regenRate = 1f;
+        [SerializeField]private bool isMoving = false;
+        private Inputs input;
+        private Health health;
 
-    private void Update()
-    {
-        ReplenishStamina();
-    }
+        private void Awake()
+        {
+            currentStamina = maxStamina;
+            input = GetComponent<Inputs>();
+            health = GetComponent<Health>();
+        }
 
-    public void DrainStamina() 
-    {
+        private void Update()
+        {
+            if (health.IsAlive()) 
+            {
+                RegenStaminaOverTime(Time.deltaTime);
+                DrainStamina(Time.deltaTime);
+            }
+        }
 
-    }
+        private void DrainStamina(float deltaTime)
+        {
+            if (isMoving) 
+            {
+                currentStamina -= walkDrainRate * deltaTime;
+                if(currentStamina <= 0f) 
+                {
+                    currentStamina = 0f;
+                    return;
+                }
+            }
+            else if(isMoving && input.sprint) 
+            {
+                currentStamina -= runDrainRate * deltaTime;
+                if (currentStamina <= 0f)
+                {
+                    currentStamina = 0f;
+                    return;
+                }
+            }
 
-    private void ReplenishStamina() 
-    {
+        }
 
-    }
+        public void DecreaseStamina(float amount) 
+        {
+            currentStamina -= amount;
+        }
 
-    public float GetStaminaPercentage() 
-    {
-        float percentage = currentStamina / maxStamina;
-        return percentage;
+        public void RegenStaminaOverTime(float deltaTime)
+        {
+            if (!isMoving) 
+            {
+                currentStamina += regenRate * Time.deltaTime;
+                if(currentStamina >= maxStamina) 
+                {
+                    currentStamina = maxStamina;
+                    return;
+                }
+            }
+        }
+
+        public void RegenStamina(float amount) 
+        {
+            currentStamina += amount;
+            if(currentStamina >= maxStamina) 
+            {
+                currentStamina = maxStamina;
+            }
+        }
+
+        public float GetStaminaPercentage()
+        {
+            float percentage = currentStamina / maxStamina;
+            return percentage;
+        }
+
+        public bool GetIsMoving() 
+        {
+            return isMoving;
+        }
+
+        public void SetIsMoving(bool value) 
+        {
+            isMoving = value;
+        }
+
+        public bool HasStamina() 
+        {
+            if (currentStamina > 0) return true;
+            else return false;
+        }
     }
 }

@@ -21,13 +21,14 @@ namespace OperationPolygon.AI
             }
         }
 
-        private void OnTriggerExit(Collider other)
+/*        private void OnTriggerExit(Collider other)
         {
             if(other.tag == "Player") 
             {
                 isAggroed = false;
             }
-        }
+//the zombies should just keep chasing the player
+        }*/
 
         public bool GetAggro() 
         {

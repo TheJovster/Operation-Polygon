@@ -40,5 +40,6 @@ public class UIManager : MonoBehaviour
         ammoCount.text = currentWeapon.GetCurrentAmmoInMag().ToString();
         ammoInInventoryCount.text = ammoInventory.GetCurrentAmmoInInventory().ToString();
         healthBar.fillAmount = health.GetHealthPercentage();
+        staminaBar.fillAmount = stamina.GetStaminaPercentage();
     }
 }
