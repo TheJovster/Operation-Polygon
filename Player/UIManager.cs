@@ -13,11 +13,13 @@ public class UIManager : MonoBehaviour
     [Header("TMPro Components")]
     [SerializeField] private TextMeshProUGUI ammoCount; //refactor names and everything later.
     [SerializeField] private TextMeshProUGUI ammoInInventoryCount;
+    [SerializeField] private TextMeshProUGUI timer;
     [Header("Image Components")]
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
 
     private AmmoInventory ammoInventory;
+    private GameManager gameManager;
     private Health health;
     private Stamina stamina;
 
@@ -25,6 +27,7 @@ public class UIManager : MonoBehaviour
     {
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     // Start is called before the first frame update
@@ -41,5 +44,6 @@ public class UIManager : MonoBehaviour
         ammoInInventoryCount.text = ammoInventory.GetCurrentAmmoInInventory().ToString();
         healthBar.fillAmount = health.GetHealthPercentage();
         staminaBar.fillAmount = stamina.GetStaminaPercentage();
+        timer.text = gameManager.GetCurrentTime().ToString("0.0");
     }
 }

@@ -2,6 +2,7 @@ using Cinemachine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine;
 using StarterAssets;
+using OperationPolygon.Core;
 using UnityEngine.UI;
 
 namespace OperationPolygon.Combat 
@@ -13,6 +14,7 @@ namespace OperationPolygon.Combat
 
         //components
         private Inputs input;
+        private Health health;
         private ThirdPersonController controller;
         [SerializeField] private Rig aimRig;
 
@@ -45,6 +47,7 @@ namespace OperationPolygon.Combat
             animator = GetComponent<Animator>();
             input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
+            health = GetComponent<Health>();
         }
 
         // Update is called once per frame
@@ -70,7 +73,7 @@ namespace OperationPolygon.Combat
                 mouseWorldPosition = hit.point;
             }
 
-            if (input.aim)
+            if (input.aim && health.IsAlive())
             {
                 
                 aimCamera.gameObject.SetActive(true);
@@ -81,6 +84,7 @@ namespace OperationPolygon.Combat
                 crosshairHip.gameObject.SetActive(false);
                 crosshairAim.gameObject.SetActive(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * animLerpTime));
                 Vector3 aimTarget = mouseWorldPosition;
                 aimTarget.y = transform.position.y;
                 Vector3 aimDirection = (aimTarget - transform.position).normalized;
@@ -97,6 +101,7 @@ namespace OperationPolygon.Combat
                 crosshairAim.gameObject.SetActive(false);
                 crosshairHip.gameObject.SetActive(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * animLerpTime));
             }
         }
         //why add crouch here? Because the ThirdPersonController doesn't have an animator reference on it.

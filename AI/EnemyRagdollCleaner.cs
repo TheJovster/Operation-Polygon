@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class EnemyRagdollCleaner : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float lifeTime = 10f;
 
     // Update is called once per frame
     void Update()
     {
-        
+        Destroy(this.gameObject, lifeTime);
     }
 }

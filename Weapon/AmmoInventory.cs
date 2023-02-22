@@ -7,11 +7,12 @@ namespace OperationPolygon.Combat
     public class AmmoInventory : MonoBehaviour
     {
         [SerializeField] private int currentAmmoInInventory;
+        [SerializeField] private int startingAmmo;
         [SerializeField] private int maxAmmoInInventory;
 
         private void Start()
         {
-            currentAmmoInInventory = maxAmmoInInventory;
+            currentAmmoInInventory = startingAmmo;
         }
 
         public void AddAmmo(int ammoToAdd) 

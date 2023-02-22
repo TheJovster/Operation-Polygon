@@ -1,3 +1,4 @@
+using OperationPolygon.AI.Control;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -59,6 +60,11 @@ namespace OperationPolygon.Core
                     GameObject.FindGameObjectWithTag("Player").
                         GetComponentInChildren<Stamina>().
                         RegenStamina(staminaToAdd);
+                    this.gameObject.GetComponent<EnemyController>().SetAggro();
+                    if(this.gameObject.GetComponentInParent<HordeBehaviourScript>() != null) 
+                    {
+                        this.gameObject.GetComponentInParent<HordeBehaviourScript>().HordeAlert();
+                    }
                 }
                 else if(this.gameObject.tag == "Player") 
                 {

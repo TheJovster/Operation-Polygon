@@ -34,5 +34,10 @@ namespace OperationPolygon.AI
         {
             return isAggroed;
         }
+
+        public void SetAggro() 
+        {
+            isAggroed = true;
+        }
     }
 }

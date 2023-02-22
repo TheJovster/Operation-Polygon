@@ -90,6 +90,11 @@ namespace OperationPolygon.AI.Control
             //else { feeding logic }
         }
 
+        public void SetAggro() 
+        {
+            detector.SetAggro();
+        }
+
         //animation handling and events
         private void HandleAnimation() 
         {

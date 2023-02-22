@@ -34,16 +34,7 @@ namespace OperationPolygon.Core
 
         private void DrainStamina(float deltaTime)
         {
-            if (isMoving) 
-            {
-                currentStamina -= walkDrainRate * deltaTime;
-                if(currentStamina <= 0f) 
-                {
-                    currentStamina = 0f;
-                    return;
-                }
-            }
-            else if(isMoving && input.sprint) 
+            if (isMoving && input.sprint)
             {
                 currentStamina -= runDrainRate * deltaTime;
                 if (currentStamina <= 0f)
@@ -52,7 +43,15 @@ namespace OperationPolygon.Core
                     return;
                 }
             }
-
+            else if (isMoving) 
+            {
+                currentStamina -= walkDrainRate * deltaTime;
+                if(currentStamina <= 0f) 
+                {
+                    currentStamina = 0f;
+                    return;
+                }
+            }
         }
 
         public void DecreaseStamina(float amount) 
