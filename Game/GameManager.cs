@@ -1,13 +1,8 @@
-using OperationPolygon.Combat;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using StarterAssets;
-using UnityEngine.Diagnostics;
-using System.Runtime.CompilerServices;
-using UnityEditor.Animations;
+
+
 
 namespace OperationPolygon.Core 
 {
@@ -137,6 +132,7 @@ namespace OperationPolygon.Core
             timeRemaining = lastTimeLookup;
             gameIsOn = false;
             Time.timeScale = 0;
+            Cursor.lockState = CursorLockMode.Confined;
             soundtrackSource.Stop();
             menuSource.Stop();
             gameOverSource.Stop();
