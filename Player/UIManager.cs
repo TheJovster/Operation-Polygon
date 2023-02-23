@@ -34,6 +34,7 @@ public class UIManager : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
+        victoryMenu.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -68,5 +69,10 @@ public class UIManager : MonoBehaviour
     public void ShowGameOverScreen() 
     {
         gameOverMenu.SetActive(true);
+    }
+
+    public void ShowVictoryScreen() 
+    {
+        victoryMenu.SetActive(true);
     }
 }

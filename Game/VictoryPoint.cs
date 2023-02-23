@@ -23,8 +23,7 @@ namespace OperationPolygon.Core
 
         private void SetVictoryCondition()
         {
-            Debug.Log("Yay, you have won!");
-            gameManager.LoadMainMenu();
+            gameManager.TriggerVictory();
         }
     }
 }

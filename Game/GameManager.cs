@@ -29,6 +29,7 @@ namespace OperationPolygon.Core
         [SerializeField] private AudioSource soundtrackSource;
         [SerializeField] private AudioSource menuSource;
         [SerializeField] private AudioSource gameOverSource;
+        [SerializeField] private AudioSource victorySource;
 
 
         //private string mainMenuScene = "";
@@ -58,7 +59,7 @@ namespace OperationPolygon.Core
             }
 
 
-            if (Input.GetKeyDown(KeyCode.Escape)) 
+            if (Input.GetKeyDown(KeyCode.Escape) && gameIsOn) 
             {
                 if (isPaused) 
                 {
@@ -128,6 +129,19 @@ namespace OperationPolygon.Core
             Time.timeScale = 0f;
             uiManager.ShowGameOverScreen();
             Cursor.lockState = CursorLockMode.Confined;
+        }
+
+        public void TriggerVictory() 
+        {
+            float lastTimeLookup = timeRemaining;
+            timeRemaining = lastTimeLookup;
+            gameIsOn = false;
+            Time.timeScale = 0;
+            soundtrackSource.Stop();
+            menuSource.Stop();
+            gameOverSource.Stop();
+            victorySource.Play();
+            uiManager.ShowVictoryScreen();
         }
 
         public void ReturnToMainMenu()
