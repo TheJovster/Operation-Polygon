@@ -17,6 +17,10 @@ public class UIManager : MonoBehaviour
     [Header("Image Components")]
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
+    [Header("Menu Objects")]
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject gameOverMenu;
+    [SerializeField] private GameObject victoryMenu;
 
     private AmmoInventory ammoInventory;
     private GameManager gameManager;
@@ -28,6 +32,8 @@ public class UIManager : MonoBehaviour
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
         gameManager = FindObjectOfType<GameManager>();
+        pauseMenu.SetActive(false);
+        gameOverMenu.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -45,5 +51,22 @@ public class UIManager : MonoBehaviour
         healthBar.fillAmount = health.GetHealthPercentage();
         staminaBar.fillAmount = stamina.GetStaminaPercentage();
         timer.text = gameManager.GetCurrentTime().ToString("0.0");
+    }
+
+    public void ShowPauseMenu() 
+    {
+        pauseMenu.SetActive(true);
+        Cursor.lockState = CursorLockMode.Confined;
+    }
+    
+    public void HidePauseMenu() 
+    {
+        pauseMenu.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void ShowGameOverScreen() 
+    {
+        gameOverMenu.SetActive(true);
     }
 }

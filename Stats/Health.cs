@@ -95,6 +95,7 @@ namespace OperationPolygon.Core
                 if(gameObject.tag == "Player") 
                 {
                     animator.SetBool("Die", true);
+                    FindObjectOfType<GameManager>().SetGameOver();
                     //game over functionality
                 }
                 if(gameObject.tag != "Player") 

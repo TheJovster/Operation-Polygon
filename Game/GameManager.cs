@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using StarterAssets;
 using UnityEngine.Diagnostics;
+using System.Runtime.CompilerServices;
+using UnityEditor.Animations;
 
 namespace OperationPolygon.Core 
 {
@@ -19,8 +21,15 @@ namespace OperationPolygon.Core
         private bool gameIsOn = false;
         private bool gameOver = false;
 
-        [SerializeField] private GameObject pauseMenu;
+        private GameObject player;
+        private GameObject soundtrackManager;
+        private UIManager uiManager;
         [SerializeField]private bool isPaused = false;
+
+        [SerializeField] private AudioSource soundtrackSource;
+        [SerializeField] private AudioSource menuSource;
+        [SerializeField] private AudioSource gameOverSource;
+
 
         //private string mainMenuScene = "";
 
@@ -28,6 +37,12 @@ namespace OperationPolygon.Core
         void Awake()
         {
             gameIsOn = true;
+            player = GameObject.FindGameObjectWithTag("Player");
+            uiManager = player.GetComponent<UIManager>();
+            soundtrackManager = GameObject.FindGameObjectWithTag("SoundtrackManager");
+            soundtrackSource = soundtrackManager.GetComponent<AudioSource>();
+            Time.timeScale = 1;
+            Cursor.lockState = CursorLockMode.Locked;
         }
 
         private void Start()
@@ -41,10 +56,7 @@ namespace OperationPolygon.Core
             {
                 TimerTick(Time.deltaTime);
             }
-            if (timeRemaining <= endGameTime)
-            {
-                TriggerGameOver();
-            }
+
 
             if (Input.GetKeyDown(KeyCode.Escape)) 
             {
@@ -59,22 +71,38 @@ namespace OperationPolygon.Core
             }
         }
 
-        private void Pause() 
+        public void Pause() 
         {
             Time.timeScale = 0f;
+            uiManager.ShowPauseMenu();
+            soundtrackSource.Pause();
+            menuSource.Play();
             isPaused = true;
         }
 
-        private void Unpause() 
+        public void Unpause() 
         {
             Time.timeScale = 1f;
+            uiManager.HidePauseMenu();
+            menuSource.Pause();
+            soundtrackSource.Play();
             isPaused = false;
+        }
+
+        public void ReloadLevel() 
+        {
+            string currentSceneName = SceneManager.GetActiveScene().name;
+            SceneManager.LoadSceneAsync(currentSceneName);
         }
 
 
         private void TimerTick(float deltaTime) 
         {
             timeRemaining -= deltaTime;
+            if (timeRemaining <= endGameTime)
+            {
+                TriggerGameOver();
+            }
         }
 
         public bool IsGameOver() 
@@ -84,27 +112,33 @@ namespace OperationPolygon.Core
 
         public void TriggerGameOver() 
         {
-            timeRemaining = 0f;
-            gameOver = true;
+            float lastTimeLookup = timeRemaining;
+            timeRemaining = lastTimeLookup;
             gameIsOn = false;
-            GameOverCondition();
+            StartCoroutine(GameOverCondition());
         }
 
-        private void GameOverCondition() 
+        private IEnumerator GameOverCondition() 
         {
             //game over logic
+            soundtrackSource.Stop();
+            menuSource.Stop();
+            gameOverSource.Play();
+            yield return new WaitForSeconds(3f);
             Time.timeScale = 0f;
+            uiManager.ShowGameOverScreen();
+            Cursor.lockState = CursorLockMode.Confined;
         }
 
-
+        public void ReturnToMainMenu()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadSceneAsync(0);
+        }
 
         //event triggers
 
-        public void ReturnToMainMenu() 
-        {
-            Time.timeScale = 1f;
-            SceneManager.LoadSceneAsync("");
-        }
+
 
         //getters
 
@@ -121,6 +155,14 @@ namespace OperationPolygon.Core
         public bool IsPaused() 
         {
             return isPaused;
+        }
+
+        //setters
+
+        public void SetGameOver() 
+        {
+            gameOver = true;
+            TriggerGameOver();
         }
     }
 
