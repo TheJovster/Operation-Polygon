@@ -1,9 +1,11 @@
 using Cinemachine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem;
 using UnityEngine;
 using StarterAssets;
 using OperationPolygon.Core;
 using UnityEngine.UI;
+using System;
 
 namespace OperationPolygon.Combat 
 {
@@ -14,9 +16,11 @@ namespace OperationPolygon.Combat
 
         //components
         private Inputs input;
+        private InputHandler inputHandler;
         private Health health;
         private ThirdPersonController controller;
         [SerializeField] private Rig aimRig;
+        private GameManager gameManager;
 
         //UIComponents
         [SerializeField] private Image crosshairHip;
@@ -27,8 +31,8 @@ namespace OperationPolygon.Combat
         [SerializeField] private float maximumAimDistance = 600f;
         [SerializeField] private float defaultMouseSensitivity = 1f;
         [SerializeField] private float mouseAimSensitivity = .333f;
-        [SerializeField] private float aimMoveSpeed = 1f;
-        [SerializeField] private float aimSprintSpeed = 2.65f;
+/*        [SerializeField] private float aimMoveSpeed = 1f;
+        [SerializeField] private float aimSprintSpeed = 2.65f;*/
         [SerializeField] private float animLerpTime = 10f;
         [SerializeField] private float rigWeightLerpTime = 20f;
         private float aimRigWeight;
@@ -44,22 +48,28 @@ namespace OperationPolygon.Combat
 
         void Awake()
         {
+
+            gameManager = FindObjectOfType<GameManager>();
             animator = GetComponent<Animator>();
             input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
             health = GetComponent<Health>();
         }
 
+        private void Start()
+        {
+            
+        }
+
         // Update is called once per frame
         void Update()
         {
             AimState();
-            if (input.aim && input.switchShoulders) 
+            if (input.aim && input.switchShoulders && Time.deltaTime == 1) 
             {
                 ShoulderSwitch();
             }
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
-            
         }
 
         private void AimState()
@@ -73,7 +83,7 @@ namespace OperationPolygon.Combat
                 mouseWorldPosition = hit.point;
             }
 
-            if (input.aim && health.IsAlive())
+            if (input.aim && health.IsAlive() && Time.timeScale == 1)
             {
                 
                 aimCamera.gameObject.SetActive(true);
@@ -92,7 +102,6 @@ namespace OperationPolygon.Combat
             }
             else
             {
-                
                 aimCamera.gameObject.SetActive(false);
                 controller.SetMouseSensitivityFraction(defaultMouseSensitivity);
                 controller.SetRotationWithMovement(true);

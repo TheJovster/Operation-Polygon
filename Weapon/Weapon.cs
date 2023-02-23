@@ -37,7 +37,7 @@ namespace OperationPolygon.Combat
 
         //input actions
         private Inputs input;
-        private InputActions inputActions;
+        private InputHandler inputActions;
         private PlayerInput playerInput;
 
         [Header("Variables")]
@@ -52,7 +52,7 @@ namespace OperationPolygon.Combat
 
         private bool isReloading = false;
 
-        private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
+        //private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
         private float animTransitionTime = .25f; //using this value for Animator transition time.
 
         private void Awake()
@@ -64,7 +64,7 @@ namespace OperationPolygon.Combat
             ammoInventory = GetComponentInParent<AmmoInventory>();
             recoilHandler = GetComponent<WeaponRecoilHandler>();
             spreadHandler = GetComponent<WeaponSpread>();
-            inputActions = new InputActions();
+            inputActions = new InputHandler();
 
             inputActions.Player.Enable();
             inputActions.Player.Shoot.performed += OnShoot;

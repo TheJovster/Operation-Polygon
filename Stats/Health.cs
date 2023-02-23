@@ -71,14 +71,12 @@ namespace OperationPolygon.Core
                     onHitParticle.GetComponent<ParticleSystem>().Play();
                     StartCoroutine(PlayerTriggerGetHit());
                 }
-                Debug.Log(gameObject.name + " has taken " + damageToTake + " damage.");
             }
             //particle and sounds effects
             //animation triggers
             if(currentHealth <= 0) 
             {
                 isAlive = false;
-                Debug.Log(gameObject.name + " has died.");
                 Die();
             }
         }

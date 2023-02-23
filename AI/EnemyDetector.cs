@@ -8,8 +8,6 @@ namespace OperationPolygon.AI
     public class EnemyDetector : MonoBehaviour
     {
         [SerializeField] private LayerMask targetLayer;
-        [SerializeField] private float sphereRadius = 10f;
-        [SerializeField] private float searchDistance = 100f;
 
         private bool isAggroed = false;
 
