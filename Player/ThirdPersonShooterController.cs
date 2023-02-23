@@ -65,7 +65,7 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-            if (input.aim && input.switchShoulders && Time.deltaTime == 1) 
+            if (input.aim && input.switchShoulders && Time.timeScale == 1) 
             {
                 ShoulderSwitch();
             }

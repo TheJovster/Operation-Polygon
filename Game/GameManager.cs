@@ -48,24 +48,27 @@ namespace OperationPolygon.Core
 
             if (Input.GetKeyDown(KeyCode.Escape)) 
             {
-                ToggleMainMenu();
+                if (isPaused) 
+                {
+                    Unpause();
+                }
+                else if (!isPaused) 
+                {
+                    Pause();
+                }
             }
         }
 
-        private void ToggleMainMenu() 
+        private void Pause() 
         {
-            Debug.Log("ToggleMainMenu");
-            isPaused = !isPaused;
-            if (isPaused) 
-            {
-                Time.timeScale = 1;
-                isPaused = false;
-            }
-            else if (!isPaused) 
-            {
-                Time.timeScale = 0;
-                isPaused = true;
-            }
+            Time.timeScale = 0f;
+            isPaused = true;
+        }
+
+        private void Unpause() 
+        {
+            Time.timeScale = 1f;
+            isPaused = false;
         }
 
 
