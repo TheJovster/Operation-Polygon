@@ -157,11 +157,6 @@ namespace OperationPolygon.Core
             return timeRemaining;
         }
 
-        public void LoadMainMenu() 
-        {
-
-        }
-
         public bool IsPaused() 
         {
             return isPaused;
