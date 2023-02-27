@@ -1,6 +1,7 @@
 using OperationPolygon.AI.Control;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,6 +21,7 @@ namespace OperationPolygon.Core
         //components
         [Header("Components")]
         [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioSource headAudioSource;
         private Animator animator;
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
@@ -27,6 +29,7 @@ namespace OperationPolygon.Core
         [SerializeField] private GameObject ragdollPrefab;
         [SerializeField] private AudioClip onDestroySFX;
         [SerializeField] private AudioClip[] onHitSFX;
+        [SerializeField] private AudioClip[] gruntSFX; //add this to enemies later.
         //sound
         [Header("Additive Variables")]
         [SerializeField] private Vector3 VFXOffset;
@@ -69,6 +72,10 @@ namespace OperationPolygon.Core
                 else if(this.gameObject.tag == "Player") 
                 {
                     onHitParticle.GetComponent<ParticleSystem>().Play();
+                    int onHitSFXIndex = Random.Range(0, onHitSFX.Length);
+                    audioSource.PlayOneShot(onHitSFX[onHitSFXIndex]);
+                    int gruntSFXIndex = Random.Range(0, gruntSFX.Length);
+                    headAudioSource.PlayOneShot(gruntSFX[gruntSFXIndex]);
                     StartCoroutine(PlayerTriggerGetHit());
                 }
             }
