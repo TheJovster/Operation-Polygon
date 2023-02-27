@@ -157,6 +157,16 @@ namespace OperationPolygon.Core
             return isAlive;
         }
 
+        public float GetStaminaToAdd() 
+        {
+            return staminaToAdd;
+        }
+
+        public int GetCurrentHealth() 
+        {
+            return currentHealth;
+        }
+
         //player-specific coroutines
         private IEnumerator PlayerTriggerGetHit() 
         {
