@@ -94,6 +94,8 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        private bool _isCrouching = false;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -172,11 +174,12 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            FallAndGravity();
+            JumpAndGravity();
             GroundedCheck();
             if (_health.IsAlive()) 
             {
                 Move();
+                Crouch();
             }
         }
 
@@ -233,8 +236,13 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina
-            float targetSpeed = _input.sprint && _stamina.HasStamina()
+            float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching
                 ? SprintSpeed : MoveSpeed;
+
+            if (_isCrouching) 
+            {
+                targetSpeed = CrouchSpeed;
+            }
             //need to refactor for crouching later
 
             // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
@@ -312,7 +320,8 @@ namespace StarterAssets
             }
         }
 
-        private void FallAndGravity() //changed the name of the method
+
+        private void JumpAndGravity() //changed the name of the method
         {
             if (Grounded)
             {
@@ -333,7 +342,7 @@ namespace StarterAssets
                 }
 
                 // Jump  - commented out code snippet to disable jumping
-/*                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+                if (_input.jump && _jumpTimeoutDelta <= 0.0f && _health.IsAlive())
                 {
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -344,7 +353,7 @@ namespace StarterAssets
                     {
                         _animator.SetBool(_animIDJump, true);
                     }
-                }*/
+                }
 
                 // jump timeout
                 if (_jumpTimeoutDelta >= 0.0f)
@@ -381,6 +390,25 @@ namespace StarterAssets
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
         }
+
+        private void Crouch() 
+        {
+            if (_input.crouch) 
+            {
+                _isCrouching = !_isCrouching;
+                _input.crouch = false;
+
+                if (_isCrouching) 
+                {
+                    _animator.SetBool("Crouch", true);
+                }
+                else if (!_isCrouching) 
+                {
+                    _animator.SetBool("Crouch", false);
+                }
+            }
+        }
+
 
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
@@ -427,6 +455,13 @@ namespace StarterAssets
 
         //public getter functions
 
+        public bool IsCrouching() 
+        {
+            return _isCrouching;
+        }
+
+        //public setter methods - maybe I'll need it later
+
         public void SetMouseSensitivityFraction(float fractionValue)
         {
             MouseSensitivityFraction = fractionValue;
@@ -457,7 +492,6 @@ namespace StarterAssets
             SprintSpeed = 5.335f;
         }
 
-        //public setter methods - maybe I'll need it later
 
 
         //animation events

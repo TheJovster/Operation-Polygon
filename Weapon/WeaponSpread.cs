@@ -12,6 +12,7 @@ namespace OperationPolygon.Combat
 
         [SerializeField]private float currentAimSpreadAngle;
         [SerializeField] private float defaultSpreadAngle = 3f;
+        [SerializeField] private float crouchSpreadAngle = .25f;
         [SerializeField]private float aimSpreadAngleMultiplier = .5f;
         [SerializeField]private float moveSpreadAngleMultiplier = 2f;
 
@@ -29,13 +30,17 @@ namespace OperationPolygon.Combat
             {
                 currentAimSpreadAngle = defaultSpreadAngle * aimSpreadAngleMultiplier;
             }
-            else if(input.aim != true) 
-            {
-                currentAimSpreadAngle = defaultSpreadAngle;
-            }
             else if(input.move.magnitude != 0f) 
             {
                 currentAimSpreadAngle = (defaultSpreadAngle * moveSpreadAngleMultiplier) * aimSpreadAngleMultiplier;
+            }
+            else if(controller.IsCrouching()) 
+            {
+                currentAimSpreadAngle = crouchSpreadAngle * aimSpreadAngleMultiplier;
+            }
+            else if(controller.IsCrouching() && input.move.sqrMagnitude != 0f) 
+            {
+                currentAimSpreadAngle = (crouchSpreadAngle * moveSpreadAngleMultiplier) * aimSpreadAngleMultiplier;
             }
 
             float randomXAngle = Random.Range(-currentAimSpreadAngle, currentAimSpreadAngle);

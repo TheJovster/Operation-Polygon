@@ -44,7 +44,15 @@ namespace OperationPolygon.Combat
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
 
-        //components in children
+        //Animator Weight Blend Layer indices
+        private int baseLayerIndex = 1;
+        private int upperBodyLayerindex = 3;
+
+        //animator Weight Blend Layer float
+        private float weightOff = 0f;
+        private float weightOn = 1f;
+
+        private float lookForwardLerpValue = 20f;
 
         void Awake()
         {
@@ -89,16 +97,16 @@ namespace OperationPolygon.Combat
                 aimCamera.gameObject.SetActive(true);
                 controller.SetMouseSensitivityFraction(mouseAimSensitivity);
                 controller.SetRotationWithMovement(false);
-                aimRigWeight = 1f;
+                aimRigWeight = weightOn;
                 isAiming = true;
                 crosshairHip.gameObject.SetActive(false);
                 crosshairAim.gameObject.SetActive(true);
-                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * animLerpTime));
-                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 0f, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(baseLayerIndex, Mathf.Lerp(animator.GetLayerWeight(baseLayerIndex), weightOn, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(upperBodyLayerindex, Mathf.Lerp(animator.GetLayerWeight(upperBodyLayerindex), weightOff, Time.deltaTime * animLerpTime));
                 Vector3 aimTarget = mouseWorldPosition;
                 aimTarget.y = transform.position.y;
                 Vector3 aimDirection = (aimTarget - transform.position).normalized;
-                transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f); //bad practice here
+                transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * lookForwardLerpValue); //bad practice here
             }
             else
             {
@@ -109,8 +117,8 @@ namespace OperationPolygon.Combat
                 isAiming = false;
                 crosshairAim.gameObject.SetActive(false);
                 crosshairHip.gameObject.SetActive(true);
-                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * animLerpTime));
-                animator.SetLayerWeight(3, Mathf.Lerp(animator.GetLayerWeight(3), 1f, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(baseLayerIndex, Mathf.Lerp(animator.GetLayerWeight(baseLayerIndex), weightOff, Time.deltaTime * animLerpTime));
+                animator.SetLayerWeight(upperBodyLayerindex, Mathf.Lerp(animator.GetLayerWeight(upperBodyLayerindex), weightOn, Time.deltaTime * animLerpTime));
             }
         }
         //why add crouch here? Because the ThirdPersonController doesn't have an animator reference on it.

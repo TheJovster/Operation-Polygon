@@ -43,15 +43,6 @@ namespace OperationPolygon.Core
                     return;
                 }
             }
-            else if (isMoving) 
-            {
-                currentStamina -= walkDrainRate * deltaTime;
-                if(currentStamina <= 0f) 
-                {
-                    currentStamina = 0f;
-                    return;
-                }
-            }
         }
 
         public void DecreaseStamina(float amount) 
@@ -61,7 +52,7 @@ namespace OperationPolygon.Core
 
         public void RegenStaminaOverTime(float deltaTime)
         {
-            if (!isMoving) 
+            if (!input.sprint && isMoving || !isMoving) 
             {
                 currentStamina += regenRate * Time.deltaTime;
                 if(currentStamina >= maxStamina) 
