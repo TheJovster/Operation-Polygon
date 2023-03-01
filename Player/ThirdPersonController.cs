@@ -344,6 +344,11 @@ namespace StarterAssets
                 // Jump  - commented out code snippet to disable jumping
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f && _health.IsAlive())
                 {
+                    if (_isCrouching) 
+                    {
+                        _input.jump = false;
+                        return;
+                    }
                     // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
                     //Debug.Log("Jump Triggered");
