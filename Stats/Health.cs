@@ -58,7 +58,7 @@ namespace OperationPolygon.Core
             {
                 currentHealth -= damageToTake;
                 animator.SetTrigger("GetHit");
-                if(this.gameObject.tag == "Enemy") 
+                if(this.gameObject.tag == "EnemyZombie") 
                 {
                     GameObject.FindGameObjectWithTag("Player").
                         GetComponentInChildren<Stamina>().
@@ -68,6 +68,12 @@ namespace OperationPolygon.Core
                     {
                         this.gameObject.GetComponentInParent<HordeBehaviourScript>().HordeAlert();
                     }
+                }
+                else if(this.gameObject.tag == "EnemySoldier") 
+                {
+                    GameObject.FindGameObjectWithTag("Player").
+                        GetComponentInChildren<Stamina>().
+                        RegenStamina(staminaToAdd);
                 }
                 else if(this.gameObject.tag == "Player") 
                 {
