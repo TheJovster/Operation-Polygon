@@ -40,11 +40,23 @@ namespace OperationPolygon.Core
         [Header("NPC Variables")]
         [SerializeField] private float staminaToAdd = 5f;
 
+        //precache - might be unperformant/memory drain
+        [SerializeField]SkinnedMeshRenderer[] skinnedMeshRenderers;
+        [SerializeField]MeshRenderer[] meshRenderers;
+
         private void Awake()
         {
             currentHealth = maxHealth;
             audioSource = GetComponent<AudioSource>();
             animator = GetComponent<Animator>();
+
+            skinnedMeshRenderers = PreCacheSkinnedMeshRenderers();
+            meshRenderers = PreCacheMeshRenderers();
+        }
+
+        private void Start()
+        {
+            
         }
 
         private void Update()
@@ -100,9 +112,9 @@ namespace OperationPolygon.Core
         {
             currentHealth = 0;
             audioSource.PlayOneShot(onDestroySFX);
-            var fxInstace = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
-            Destroy(fxInstace, 1f);
-            transform.GetComponent<Collider>().enabled = false; //had to change it to a genral query.
+            var fxInstance = Instantiate(onDestroyParticle, transform.position + VFXOffset, Quaternion.identity); 
+            Destroy(fxInstance, 1f);
+            transform.GetComponent<Collider>().enabled = false; //had to change it to a general query.
             if (isHumanoid) 
             {
                 if(gameObject.tag == "Player") 
@@ -113,10 +125,19 @@ namespace OperationPolygon.Core
                 }
                 if(gameObject.tag != "Player") 
                 {
-                    SkinnedMeshRenderer meshRenderer = transform.GetComponentInChildren<SkinnedMeshRenderer>();
+                    foreach (var skinnedMeshRenderer in skinnedMeshRenderers) 
+                    {
+                        skinnedMeshRenderer.enabled = false;
+                    }   
+                    if(meshRenderers.Length > 0) 
+                    {
+                        foreach(var meshRenderer in meshRenderers) 
+                        {
+                            meshRenderer.enabled = false;
+                        }
+                    }
                     NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
                     navMesh.enabled = false;
-                    meshRenderer.enabled = false;
                     var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
                     foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
                     {
@@ -124,7 +145,6 @@ namespace OperationPolygon.Core
                         Destroy(gameObject, onDestroySFX.length + .05f);
                     }
                 }
-
             }
             else if (!isHumanoid) 
             {
@@ -146,6 +166,21 @@ namespace OperationPolygon.Core
                 int onHitSFXIndex = Random.Range(0, onHitSFX.Length);
                 audioSource.PlayOneShot(onHitSFX[onHitSFXIndex]);
             }
+        }
+
+        private SkinnedMeshRenderer[] PreCacheSkinnedMeshRenderers() 
+        {
+            SkinnedMeshRenderer[] renderers;
+            renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+            return renderers;
+        }
+
+        private MeshRenderer[] PreCacheMeshRenderers() 
+        {
+            MeshRenderer[] renderers;
+
+            renderers = GetComponentsInChildren<MeshRenderer>();
+            return renderers;
         }
 
         public void AddHealth(int healthToAdd) 
