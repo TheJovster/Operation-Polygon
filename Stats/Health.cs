@@ -63,7 +63,7 @@ namespace OperationPolygon.Core
                     GameObject.FindGameObjectWithTag("Player").
                         GetComponentInChildren<Stamina>().
                         RegenStamina(staminaToAdd);
-                    this.gameObject.GetComponent<EnemyController>().SetAggro();
+                    this.gameObject.GetComponent<EnemyZombieController>().SetAggro();
                     if(this.gameObject.GetComponentInParent<HordeBehaviourScript>() != null) 
                     {
                         this.gameObject.GetComponentInParent<HordeBehaviourScript>().HordeAlert();

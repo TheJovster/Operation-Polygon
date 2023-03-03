@@ -177,14 +177,18 @@ namespace OperationPolygon.Combat
         private IEnumerator ReloadAnimationWaitTime()
         {
             shooter.GetAnimator().SetLayerWeight(2, 1f);
+            shooter.GetAnimator().SetLayerWeight(3, 0f);
             if (shooter.IsAiming())
             {
                 shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
+                shooter.GetAnimator().Play(reloadAnimHash, 3, animTransitionTime);
             }
             shooter.GetAnimator().Play(reloadAnimHash, 2, animTransitionTime);
+            shooter.GetAnimator().Play(reloadAnimHash, 3, animTransitionTime);
             yield return new WaitForSeconds(1.6f);
             AmmoRemovalCalculation();
             shooter.GetAnimator().SetLayerWeight(2, 0f);
+            shooter.GetAnimator().SetLayerWeight(3, 1f);
             isReloading = false;
         }
 

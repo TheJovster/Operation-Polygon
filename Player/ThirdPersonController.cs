@@ -94,7 +94,7 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
-        private bool _isCrouching = false;
+        [SerializeField]private bool _isCrouching = false;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;

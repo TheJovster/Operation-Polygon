@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 namespace OperationPolygon.AI.Control 
 {
-    public class EnemyController : MonoBehaviour
+    public class EnemyZombieController : MonoBehaviour
     {
         //components
         [SerializeField] private NavMeshAgent navMesh;

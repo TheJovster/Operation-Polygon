@@ -15,12 +15,14 @@ namespace OperationPolygon.Core
         [SerializeField]private bool isMoving = false;
         private Inputs input;
         private Health health;
+        private ThirdPersonController controller;
 
         private void Awake()
         {
             currentStamina = maxStamina;
             input = GetComponent<Inputs>();
             health = GetComponent<Health>();
+            controller = GetComponent<ThirdPersonController>();
         }
 
         private void Update()
@@ -34,7 +36,7 @@ namespace OperationPolygon.Core
 
         private void DrainStamina(float deltaTime)
         {
-            if (isMoving && input.sprint)
+            if (isMoving && input.sprint && !controller.IsCrouching())
             {
                 currentStamina -= runDrainRate * deltaTime;
                 if (currentStamina <= 0f)

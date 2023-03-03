@@ -31,15 +31,16 @@ namespace OperationPolygon.Combat
         [SerializeField] private float maximumAimDistance = 600f;
         [SerializeField] private float defaultMouseSensitivity = 1f;
         [SerializeField] private float mouseAimSensitivity = .333f;
-/*        [SerializeField] private float aimMoveSpeed = 1f;
-        [SerializeField] private float aimSprintSpeed = 2.65f;*/
+        /*        [SerializeField] private float aimMoveSpeed = 1f;
+                [SerializeField] private float aimSprintSpeed = 2.65f;*/
         [SerializeField] private float animLerpTime = 10f;
         [SerializeField] private float rigWeightLerpTime = 20f;
         private float aimRigWeight;
+        private bool weaponEquipped = true;
 
         //serialized for testing
-        [SerializeField]private bool isAiming = false;
-        [SerializeField]private bool shouldersSwapped = false;
+        [SerializeField] private bool isAiming = false;
+        [SerializeField] private bool shouldersSwapped = false;
 
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
@@ -66,14 +67,14 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
-            
+
         }
 
         // Update is called once per frame
         void Update()
         {
             AimState();
-            if (input.aim && input.switchShoulders && Time.timeScale == 1) 
+            if (input.aim && input.switchShoulders && Time.timeScale == 1)
             {
                 ShoulderSwitch();
             }
@@ -93,7 +94,7 @@ namespace OperationPolygon.Combat
 
             if (input.aim && health.IsAlive() && Time.timeScale == 1)
             {
-                
+
                 aimCamera.gameObject.SetActive(true);
                 controller.SetMouseSensitivityFraction(mouseAimSensitivity);
                 controller.SetRotationWithMovement(false);
@@ -124,59 +125,55 @@ namespace OperationPolygon.Combat
         //why add crouch here? Because the ThirdPersonController doesn't have an animator reference on it.
         //it would be more 
 
-        private void ShoulderSwitch() 
+        private void ShoulderSwitch()
         {
-            
+
             shouldersSwapped = !shouldersSwapped;
             Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
-            if (!shouldersSwapped) 
+            if (!shouldersSwapped)
             {
                 followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, 10f); //magic number - make exposed variables later
                 input.switchShoulders = false;
             }
-            else if (shouldersSwapped) 
+            else if (shouldersSwapped)
             {
                 followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, 10f);
                 input.switchShoulders = false;
             }
-            
-        }
-
-        private void OnCrouch()
-        {
-
 
         }
 
-        public bool IsAiming() 
+        //public getters
+
+        public bool IsAiming()
         {
             return isAiming;
         }
 
-        public Animator GetAnimator() 
+        public Animator GetAnimator()
         {
             return animator;
         }
 
-/*        private void Shoot(Vector3 mousePosition) //add this to the weapon system
- *        Psuedocode left for reference
-            //note to self - remove the pass-through Vector3. 
-            //weapon namespace will have to rely heavily on the weapon system.
-        {
-            Debug.Log("Pew pew");
-            Vector3 muzzleDirection = (mousePosition - muzzlePoint.position).normalized;
-            Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
-            inputs.shoot = false;
-        }*/
+        /*        private void Shoot(Vector3 mousePosition) //add this to the weapon system
+         *        Psuedocode left for reference
+                    //note to self - remove the pass-through Vector3. 
+                    //weapon namespace will have to rely heavily on the weapon system.
+                {
+                    Debug.Log("Pew pew");
+                    Vector3 muzzleDirection = (mousePosition - muzzlePoint.position).normalized;
+                    Instantiate(bulletPrefab, muzzlePoint.position, Quaternion.LookRotation(muzzleDirection));
+                    inputs.shoot = false;
+                }*/
 
         //animation events
 
-        public void OnReloadStart() 
+        public void OnReloadStart()
         {
             GetComponentInChildren<Weapon>().PlayReloadStartSound();
         }
 
-        public void OnReloadMid() 
+        public void OnReloadMid()
         {
             GetComponentInChildren<Weapon>().PlayReloadMidSound();
         }
