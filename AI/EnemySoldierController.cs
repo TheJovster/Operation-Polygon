@@ -15,6 +15,9 @@ public class EnemySoldierController : MonoBehaviour
     private void Update()
     {
         LookAtPlayer();
+        //TODO: I need to write a custom IK script for the NPCs.
+        //the IK script needs to be separate
+
     }
 
     private void LookAtPlayer() 
@@ -22,4 +25,16 @@ public class EnemySoldierController : MonoBehaviour
         Vector3 playerPositionAim = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
         transform.LookAt(playerPositionAim);
     }
+
+    //SearchBehaviour
+
+    //ChaseBehaviour
+
+    //EngageBehaviour
+
+    //RetreatBehaviour
+
+    //PatrolBehaviour
+
+    //???
 }
