@@ -29,7 +29,22 @@ namespace OperationPolygon.Combat
 
         private void OnCollisionEnter(Collision other)
         {
-            if (other.gameObject.tag == "EnemySoldier")
+            if(other.gameObject.tag == "EnemyDrone") 
+            {
+                other.
+                collider.
+                GetComponent<Health>()?.
+                TakeDamage(
+                GameObject.FindGameObjectWithTag("PlayerWeapon").
+                GetComponent<Weapon>().
+                GetWeaponDamage());
+                //not very performant
+                //difficult to read, but I think it's useable in such a small project
+                //I'd go for another solution for a more hardware intensive project.
+                Destroy(this.gameObject);
+            }
+
+            else if (other.gameObject.tag == "EnemySoldier")
             {
                 other.
                 collider.

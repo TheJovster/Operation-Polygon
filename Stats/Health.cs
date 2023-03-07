@@ -69,9 +69,16 @@ namespace OperationPolygon.Core
             if (isAlive) 
             {
                 currentHealth -= damageToTake;
-                animator.SetTrigger("GetHit");
+
+                if(this.gameObject.tag == "EnemyDrone") 
+                {
+                    int gruntIndex = Random.Range(0, gruntSFX.Length);
+                    headAudioSource.PlayOneShot(gruntSFX[gruntIndex]);
+                }
+
                 if(this.gameObject.tag == "EnemyZombie") 
                 {
+                    animator.SetTrigger("GetHit");
                     GameObject.FindGameObjectWithTag("Player").
                         GetComponentInChildren<Stamina>().
                         RegenStamina(staminaToAdd);
@@ -83,6 +90,7 @@ namespace OperationPolygon.Core
                 }
                 else if(this.gameObject.tag == "EnemySoldier") 
                 {
+                    animator.SetTrigger("GetHit");
                     GameObject.FindGameObjectWithTag("Player").
                         GetComponentInChildren<Stamina>().
                         RegenStamina(staminaToAdd);
@@ -125,17 +133,7 @@ namespace OperationPolygon.Core
                 }
                 if(gameObject.tag != "Player") 
                 {
-                    foreach (var skinnedMeshRenderer in skinnedMeshRenderers) 
-                    {
-                        skinnedMeshRenderer.enabled = false;
-                    }   
-                    if(meshRenderers.Length > 0) 
-                    {
-                        foreach(var meshRenderer in meshRenderers) 
-                        {
-                            meshRenderer.enabled = false;
-                        }
-                    }
+                    DisableMeshRenderers();
                     NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
                     navMesh.enabled = false;
                     var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
@@ -146,14 +144,29 @@ namespace OperationPolygon.Core
                     }
                 }
             }
-            else if (!isHumanoid) 
+            else if (!isHumanoid)
             {
-                transform.GetComponent<MeshRenderer>().enabled = false;
+                DisableMeshRenderers();
                 Destroy(gameObject, onDestroySFX.length + .05f);
             }
-            
+
             //TODO: Add Ragdoll functionality
             //TODO Done: Ragdolls added.
+        }
+
+        private void DisableMeshRenderers()
+        {
+            foreach (var skinnedMeshRenderer in skinnedMeshRenderers)
+            {
+                skinnedMeshRenderer.enabled = false;
+            }
+            if (meshRenderers.Length > 0)
+            {
+                foreach (var meshRenderer in meshRenderers)
+                {
+                    meshRenderer.enabled = false;
+                }
+            }
         }
 
         private void OnCollisionEnter(Collision other) 
