@@ -1,4 +1,6 @@
-﻿using OperationPolygon.Core;
+﻿using Cinemachine;
+using OperationPolygon.Combat;
+using OperationPolygon.Core;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -126,6 +128,12 @@ namespace StarterAssets
 
         private bool _hasAnimator;
 
+        private ThirdPersonShooterController _thirdPersonShooterController;
+        private float _cineMachineYHeightOriginal;
+        [Header("CinemachineAimController")]
+        [SerializeField] private CinemachineVirtualCamera _cmAimCamera;
+        [SerializeField] private float _aimYHeightCrouching;
+
         private bool IsCurrentDeviceMouse
         {
             get
@@ -146,6 +154,8 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+            _thirdPersonShooterController = GetComponent<ThirdPersonShooterController>();
+            _cineMachineYHeightOriginal = _cmAimCamera.transform.position.y;
         }
 
         private void Start()
@@ -236,7 +246,7 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina
-            float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching
+            float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded
                 ? SprintSpeed : MoveSpeed;
 
             if (_isCrouching) 
@@ -403,13 +413,20 @@ namespace StarterAssets
                 _isCrouching = !_isCrouching;
                 _input.crouch = false;
 
+                CinemachineVirtualCameraBase virtualCamBase = _cmAimCamera.GetComponent<CinemachineVirtualCameraBase>();
                 if (_isCrouching) 
                 {
                     _animator.SetBool("Crouch", true);
+                    CinemachineOrbitalTransposer vcOrbitalTransposer = virtualCamBase.GetComponent<CinemachineOrbitalTransposer>();
+                    if (vcOrbitalTransposer != null)
+                    vcOrbitalTransposer.m_FollowOffset.y = _aimYHeightCrouching;
                 }
                 else if (!_isCrouching) 
                 {
                     _animator.SetBool("Crouch", false);
+                    CinemachineOrbitalTransposer vcOrbitalTransposer = virtualCamBase.GetComponent<CinemachineOrbitalTransposer>();
+                    if(vcOrbitalTransposer != null)
+                    vcOrbitalTransposer.m_FollowOffset.y = _cineMachineYHeightOriginal;
                 }
             }
         }

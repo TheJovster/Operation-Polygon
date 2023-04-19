@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace OperationPolygon.AI.Control 
 {
     public class HordeBehaviourScript : MonoBehaviour
     {
+
         private bool isAlerted = false;
         void Update()
         {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -39,6 +40,10 @@ namespace OperationPolygon.Core
 
         [Header("NPC Variables")]
         [SerializeField] private float staminaToAdd = 5f;
+
+
+        [SerializeField] private float fadeOutTime = 10f;
+        private float elapsedTime = 0f;
 
         //precache - might be unperformant/memory drain
         [SerializeField]SkinnedMeshRenderer[] skinnedMeshRenderers;
@@ -136,12 +141,13 @@ namespace OperationPolygon.Core
                     DisableMeshRenderers();
                     NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
                     navMesh.enabled = false;
-                    var ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
+                    GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
                     foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
                     {
                         rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
-                        Destroy(gameObject, onDestroySFX.length + .05f);
+                        StartCoroutine(FadeOutMesh(ragdoll));
                     }
+
                 }
             }
             else if (!isHumanoid)
@@ -167,6 +173,52 @@ namespace OperationPolygon.Core
                     meshRenderer.enabled = false;
                 }
             }
+        }
+
+        private IEnumerator FadeOutMesh(GameObject ragdoll) 
+        {
+            SkinnedMeshRenderer skinnedMeshRenderer = ragdoll.GetComponentInChildren<SkinnedMeshRenderer>();
+            Material[] materials = skinnedMeshRenderer.materials;
+
+            // Loop through all materials and set their rendering mode to transparent
+            for (int i = 0; i < materials.Length; i++)
+            {
+                materials[i].SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                materials[i].SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                materials[i].SetInt("_ZWrite", 0);
+                materials[i].DisableKeyword("_ALPHATEST_ON");
+                materials[i].EnableKeyword("_ALPHABLEND_ON");
+                materials[i].DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                materials[i].renderQueue = 3000;
+            }
+
+            // Gradually decrease the alpha value of the color property over time
+            while (elapsedTime < fadeOutTime)
+            {
+                float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeOutTime);
+                foreach (Material material in materials)
+                {
+                    Color color = material.color;
+                    color.a = alpha;
+                    material.color = color;
+                }
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            // Set the alpha value to 0 and disable the skinned mesh renderer
+            foreach (Material material in materials)
+            {
+                Color color = material.color;
+                color.a = 0f;
+                material.color = color;
+            }
+            skinnedMeshRenderer.enabled = false;
+
+            yield return new WaitUntil(() => skinnedMeshRenderer.enabled == false);
+            Destroy(ragdoll.gameObject);
+            yield return new WaitForSeconds(.5f);
+            Destroy(this.gameObject);
         }
 
         private void OnCollisionEnter(Collision other) 

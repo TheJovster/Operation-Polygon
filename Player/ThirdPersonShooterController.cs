@@ -35,6 +35,7 @@ namespace OperationPolygon.Combat
                 [SerializeField] private float aimSprintSpeed = 2.65f;*/
         [SerializeField] private float animLerpTime = 10f;
         [SerializeField] private float rigWeightLerpTime = 20f;
+        [SerializeField] private float shoulderSwitchTime; 
         private float aimRigWeight;
         private bool weaponEquipped = true;
 
@@ -74,11 +75,16 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
+
+            aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
+        }
+
+        private void FixedUpdate()
+        {
             if (input.aim && input.switchShoulders && Time.timeScale == 1)
             {
                 ShoulderSwitch();
             }
-            aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
         }
 
         private void AimState()
@@ -127,17 +133,17 @@ namespace OperationPolygon.Combat
 
         private void ShoulderSwitch()
         {
-
             shouldersSwapped = !shouldersSwapped;
             Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+
             if (!shouldersSwapped)
             {
-                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, 10f); //magic number - make exposed variables later
+                followComponent.CameraSide = Mathf.MoveTowards(followComponent.CameraSide, 0f, 30f * Time.deltaTime); //magic number - make exposed variables later
                 input.switchShoulders = false;
             }
             else if (shouldersSwapped)
             {
-                followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, 10f);
+                followComponent.CameraSide = Mathf.MoveTowards(followComponent.CameraSide, 1f, 30f * Time.deltaTime);
                 input.switchShoulders = false;
             }
 
@@ -155,7 +161,7 @@ namespace OperationPolygon.Combat
             return animator;
         }
 
-        /*        private void Shoot(Vector3 mousePosition) //add this to the weapon system
+        /*  //I this has disabled the blooming      private void Shoot(Vector3 mousePosition) //add this to the weapon system
          *        Psuedocode left for reference
                     //note to self - remove the pass-through Vector3. 
                     //weapon namespace will have to rely heavily on the weapon system.

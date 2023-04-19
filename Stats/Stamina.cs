@@ -36,7 +36,7 @@ namespace OperationPolygon.Core
 
         private void DrainStamina(float deltaTime)
         {
-            if (isMoving && input.sprint && !controller.IsCrouching())
+            if (isMoving && input.sprint && !controller.IsCrouching() && controller.Grounded)
             {
                 currentStamina -= runDrainRate * deltaTime;
                 if (currentStamina <= 0f)
