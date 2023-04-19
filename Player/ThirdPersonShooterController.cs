@@ -6,6 +6,7 @@ using StarterAssets;
 using OperationPolygon.Core;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 namespace OperationPolygon.Combat 
 {
@@ -75,16 +76,13 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-
+            ShoulderSwitch();
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
         }
 
         private void FixedUpdate()
         {
-            if (input.aim && input.switchShoulders && Time.timeScale == 1)
-            {
-                ShoulderSwitch();
-            }
+
         }
 
         private void AimState()
@@ -133,21 +131,26 @@ namespace OperationPolygon.Combat
 
         private void ShoulderSwitch()
         {
-            shouldersSwapped = !shouldersSwapped;
-            Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
-
-            if (!shouldersSwapped)
+            if (input.aim && input.switchShoulders && Time.timeScale == 1)
             {
-                followComponent.CameraSide = Mathf.MoveTowards(followComponent.CameraSide, 0f, 30f * Time.deltaTime); //magic number - make exposed variables later
-                input.switchShoulders = false;
+                shouldersSwapped = !shouldersSwapped;
+                Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+                if (followComponent.CameraSide == 0f || followComponent.CameraSide == 1f)
+                {
+                    if (!shouldersSwapped)
+                    {
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, shoulderSwitchTime / Time.deltaTime); //magic number - make exposed variables later
+                        input.switchShoulders = false;
+                    }
+                    else if (shouldersSwapped)
+                    {
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, shoulderSwitchTime / Time.deltaTime);
+                        input.switchShoulders = false;
+                    }
+                }
             }
-            else if (shouldersSwapped)
-            {
-                followComponent.CameraSide = Mathf.MoveTowards(followComponent.CameraSide, 1f, 30f * Time.deltaTime);
-                input.switchShoulders = false;
-            }
-
         }
+
 
         //public getters
 

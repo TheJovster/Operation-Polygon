@@ -11,6 +11,9 @@ namespace OperationPolygon.Combat
     {
         [SerializeField] private float speed = 10f;
         [SerializeField] private GameObject hitGenericParticleFX;
+        [SerializeField] private GameObject[] hitDecals;
+        [SerializeField] private float decalLifetime = 3f;
+
 
         private Rigidbody rigidBody;
         private Weapon weapon;
@@ -75,6 +78,11 @@ namespace OperationPolygon.Combat
             else 
             {
                 var hitFXInstance = Instantiate(hitGenericParticleFX, transform.position, Quaternion.identity);
+                foreach(var hitDecal in hitDecals) 
+                {
+                    var decalInstance = Instantiate(hitDecal, transform.position, hitDecal.transform.rotation);
+                    Destroy(decalInstance, decalLifetime);
+                }
                 Destroy(hitFXInstance, hitFXInstance.GetComponent<ParticleSystem>().main.duration);
                 Destroy(this.gameObject);
             }
