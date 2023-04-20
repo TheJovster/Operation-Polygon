@@ -10,10 +10,13 @@ public class UIManager : MonoBehaviour
 {
     
     private Weapon currentWeapon; //probably not the best practice, but this is done for testing purposes and will be refactored later.
+    private FragCount fragCount;
     [Header("TMPro Components")]
     [SerializeField] private TextMeshProUGUI ammoCount; //refactor names and everything later.
     [SerializeField] private TextMeshProUGUI ammoInInventoryCount;
     [SerializeField] private TextMeshProUGUI timer;
+    [SerializeField] private TextMeshProUGUI rankText;
+    [SerializeField] private TextMeshProUGUI fragCountText;
     [Header("Image Components")]
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
@@ -32,6 +35,7 @@ public class UIManager : MonoBehaviour
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
         gameManager = FindObjectOfType<GameManager>();
+        fragCount = GetComponent<FragCount>();
         pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         victoryMenu.SetActive(false);
@@ -52,6 +56,7 @@ public class UIManager : MonoBehaviour
         healthBar.fillAmount = health.GetHealthPercentage();
         staminaBar.fillAmount = stamina.GetStaminaPercentage();
         timer.text = gameManager.GetCurrentTime().ToString("0.0");
+        fragCountText.text = fragCount.GetFragCount().ToString();
     }
 
     public void ShowPauseMenu() 

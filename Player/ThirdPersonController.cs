@@ -144,6 +144,7 @@ namespace StarterAssets
         [SerializeField] private float _minMoveSpeed = 2f;
         [SerializeField] private float _maxMoveSpeed = 5f;
         [SerializeField] private float _moveSpeedChangeRate = 10f;
+        private float _lastMoveSpeedValue;
 
         //others
         private InputDevice _currentDevice;
@@ -163,6 +164,7 @@ namespace StarterAssets
 
         private void Awake()
         {
+            _lastMoveSpeedValue = MoveSpeed;
             // get a reference to our main camera
             if (_mainCamera == null)
             {
@@ -175,6 +177,7 @@ namespace StarterAssets
 
         private void Start()
         {
+            
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
             _followCamOriginalFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
             _impulseSource = GetComponent<CinemachineImpulseSource>();
@@ -373,21 +376,33 @@ namespace StarterAssets
 
         private void ControlMoveSpeed() 
         {
-            float mouseWheelDelta = Input.mouseScrollDelta.y;
-            Debug.Log(mouseWheelDelta);
-            
-            if(mouseWheelDelta < 0f) 
-            {
-                MoveSpeed += mouseWheelDelta;
-                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
-            }
-            else if(mouseWheelDelta > 0f) 
-            {
-                MoveSpeed += mouseWheelDelta;
-                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
-            }
+ 
 
+            float mouseWheelDelta = Input.mouseScrollDelta.y;
             
+            Debug.Log(mouseWheelDelta);
+
+            if (mouseWheelDelta < 0f && !_thirdPersonShooterController.IsAiming())
+            {
+                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+                _lastMoveSpeedValue = MoveSpeed;
+            }
+            else if (mouseWheelDelta > 0f && !_thirdPersonShooterController.IsAiming())
+            {
+                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+                _lastMoveSpeedValue = MoveSpeed;
+            }
+            
+            if (_thirdPersonShooterController.IsAiming()) 
+            {
+                MoveSpeed = _minMoveSpeed;
+            }
+            else 
+            {
+                MoveSpeed = _lastMoveSpeedValue;
+            }
         }
 
         private void SprintEffect()

@@ -24,6 +24,7 @@ namespace OperationPolygon.Core
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioSource headAudioSource;
         private Animator animator;
+        private FragCount fragCount;
         [Header("FX")]
         [SerializeField] private GameObject onDestroyParticle;
         [SerializeField] private GameObject onHitParticle;
@@ -57,6 +58,7 @@ namespace OperationPolygon.Core
 
             skinnedMeshRenderers = PreCacheSkinnedMeshRenderers();
             meshRenderers = PreCacheMeshRenderers();
+            fragCount = GameObject.FindGameObjectWithTag("Player")?.GetComponent<FragCount>();
         }
 
         private void Start()
@@ -142,6 +144,7 @@ namespace OperationPolygon.Core
                     NavMeshAgent navMesh = transform.GetComponent<NavMeshAgent>();
                     navMesh.enabled = false;
                     GameObject ragdoll = Instantiate(ragdollPrefab, transform.position, transform.rotation);
+                    fragCount.IncrementFragCount();
                     foreach (var rigidBody in ragdoll.GetComponentsInChildren<Rigidbody>())
                     {
                         rigidBody.AddExplosionForce(100f, ragdoll.transform.position, 10f);
