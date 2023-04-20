@@ -187,10 +187,16 @@ namespace StarterAssets
             _playerInput = GetComponent<PlayerInput>();
             foreach(InputDevice device in InputSystem.devices) 
             {
+                //assignment in an if else statement
+                //I'm just trying to make sure the code is watertight
                 if(device is Mouse && device.enabled) 
                 {
                     _currentDevice = device;
                     
+                }
+                else if(device is Gamepad && device.enabled) 
+                {
+                    _currentDevice = device;
                 }
             }
 #else
@@ -272,7 +278,7 @@ namespace StarterAssets
             // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina
             float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded && !_thirdPersonShooterController.IsAiming()
                 ? SprintSpeed : MoveSpeed;
-            //ControlMoveSpeed is only available with mouse and keyboard, seeing as an analog controler controls MoveSpeed directly.
+            //ControlMoveSpeed is only available with mouse and keyboard for now
             ControlMoveSpeed();
 
             if (_input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded && Mathf.Abs(_input.move.magnitude) > 0f && !_thirdPersonShooterController.IsAiming()) 

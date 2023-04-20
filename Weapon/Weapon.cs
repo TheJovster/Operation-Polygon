@@ -127,12 +127,13 @@ namespace OperationPolygon.Combat
         {
             if (isSemi)
             {
-                if (shooter.IsAiming() && currentAmmoInMag > 0 && !isReloading)
+                if (shooter.IsAiming() && currentAmmoInMag > 0)
                 {
-                    if (context.performed && currentAmmoInMag > 0 && timeSinceLastShot >= fireRate) //for some reason, this was the only way I found to make the weapon fire automatically
+                    if (context.performed && currentAmmoInMag > 0 && timeSinceLastShot >= fireRate && !isReloading) //for some reason, this was the only way I found to make the weapon fire automatically
                     {
                         ShootAction();
                     }
+
                 }
                 if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading)
                 {
@@ -143,16 +144,19 @@ namespace OperationPolygon.Combat
 
         private void ShootAction() //shoot action contains all of the logic for shooting.
         {
-            timeSinceLastShot = 0;
-            Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
-            muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint); //needs further testing
-            Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward)); //needs further testing
-            recoilHandler.TriggerRecoil();
-            AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
-            weaponAudioSource.PlayOneShot(clipToPlay);
-            muzzleFlashFX.Play();
-            bulletEjectFX.Play();
-            currentAmmoInMag--;
+            if (!isReloading) 
+            {
+                timeSinceLastShot = 0;
+                Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
+                muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint); //needs further testing
+                Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward)); //needs further testing
+                recoilHandler.TriggerRecoil();
+                AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
+                weaponAudioSource.PlayOneShot(clipToPlay);
+                muzzleFlashFX.Play();
+                bulletEjectFX.Play();
+                currentAmmoInMag--;
+            }
         }
 
         public void OnReload(InputAction.CallbackContext context)
