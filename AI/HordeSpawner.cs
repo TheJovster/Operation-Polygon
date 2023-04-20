@@ -23,7 +23,6 @@ public class HordeSpawner : MonoBehaviour
         Vector3 randomSpawnPos = new Vector3(Random.Range(0f, maxXOffset), 0f, Random.Range(0f, maxZOffset));
         GameObject enemyInstance =Instantiate(enemies[Random.Range(0, enemies.Length)], transform.position + randomSpawnPos, Quaternion.identity);
         enemyInstance.transform.parent = this.transform;
-        Debug.Log(transform.childCount);
     }
     
 }

@@ -133,6 +133,20 @@ namespace StarterAssets
         [Header("CinemachineAimController")]
         [SerializeField] private CinemachineVirtualCamera _cmAimCamera;
         [SerializeField] private float _aimYHeightCrouching;
+        [Header("Cinemachine FOV Variables")]
+        [SerializeField] private CinemachineVirtualCamera _cmFollowCamera;
+        private CinemachineImpulseSource _impulseSource;
+        private float _followCamOriginalFOV;
+        [SerializeField] private float _followCamSprintFOV;
+        [SerializeField] private float _sprintEffectTime;
+
+        [Header("Additional Variables")]
+        [SerializeField] private float _minMoveSpeed = 2f;
+        [SerializeField] private float _maxMoveSpeed = 5f;
+        [SerializeField] private float _moveSpeedChangeRate = 10f;
+
+        //others
+        private InputDevice _currentDevice;
 
         private bool IsCurrentDeviceMouse
         {
@@ -156,12 +170,14 @@ namespace StarterAssets
             }
             _thirdPersonShooterController = GetComponent<ThirdPersonShooterController>();
             _cineMachineYHeightOriginal = _cmAimCamera.transform.position.y;
+            
         }
 
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
+            _followCamOriginalFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            _impulseSource = GetComponent<CinemachineImpulseSource>();
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<Inputs>();
@@ -169,6 +185,14 @@ namespace StarterAssets
             _health = GetComponent<Health>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
+            foreach(InputDevice device in InputSystem.devices) 
+            {
+                if(device is Mouse && device.enabled) 
+                {
+                    _currentDevice = device;
+                    
+                }
+            }
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
@@ -246,8 +270,19 @@ namespace StarterAssets
         private void Move()
         {
             // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina
-            float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded
+            float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded && !_thirdPersonShooterController.IsAiming()
                 ? SprintSpeed : MoveSpeed;
+            //ControlMoveSpeed is only available with mouse and keyboard, seeing as an analog controler controls MoveSpeed directly.
+            ControlMoveSpeed();
+
+            if (_input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded && Mathf.Abs(_input.move.magnitude) > 0f && !_thirdPersonShooterController.IsAiming()) 
+            {
+                SprintEffect();
+            }
+            else 
+            {
+                CancelSprintEffect();
+            }
 
             if (_isCrouching) 
             {
@@ -330,6 +365,41 @@ namespace StarterAssets
             }
         }
 
+        private void ControlMoveSpeed() 
+        {
+            float mouseWheelDelta = Input.mouseScrollDelta.y;
+            Debug.Log(mouseWheelDelta);
+            
+            if(mouseWheelDelta < 0f) 
+            {
+                MoveSpeed += mouseWheelDelta;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+            }
+            else if(mouseWheelDelta > 0f) 
+            {
+                MoveSpeed += mouseWheelDelta;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+            }
+
+            
+        }
+
+        private void SprintEffect()
+        {
+            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
+                Mathf.Lerp(currentFOV, _followCamSprintFOV, _sprintEffectTime * Time.deltaTime);
+            _impulseSource.GenerateImpulse();
+            
+        }
+
+        private void CancelSprintEffect() 
+        {
+            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
+                Mathf.Lerp(currentFOV, _followCamOriginalFOV, _sprintEffectTime * Time.deltaTime);
+            
+        }
 
         private void JumpAndGravity() //changed the name of the method
         {
