@@ -138,6 +138,11 @@ namespace OperationPolygon.Combat
                 if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading)
                 {
                     PlayWeaponEmptyAndReturn();
+                    ShootAction();
+                }
+                else if(shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() <= 0) 
+                {
+                    PlayWeaponEmptyAndReturn();
                 }
             }
         }
@@ -156,6 +161,12 @@ namespace OperationPolygon.Combat
                 muzzleFlashFX.Play();
                 bulletEjectFX.Play();
                 currentAmmoInMag--;
+                if (ammoInventory.GetCurrentAmmoInInventory() != 0 && currentAmmoInMag <= 0)
+                {
+                    isReloading = true;
+                    StartCoroutine(ReloadAnimationWaitTime());
+
+                }
             }
         }
 

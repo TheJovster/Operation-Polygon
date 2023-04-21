@@ -497,7 +497,7 @@ namespace StarterAssets
             }
         }
 
-        private void Crouch() 
+        private void Crouch() //written by me
         {
             if (_input.crouch) 
             {
@@ -529,9 +529,9 @@ namespace StarterAssets
             if (lfAngle > 360f) lfAngle -= 360f;
             return Mathf.Clamp(lfAngle, lfMin, lfMax);
         }
+
+
         //code written by me - Jovan Aleksic (TheJovster)
-
-
         private void OnDrawGizmosSelected()
         {
             Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);

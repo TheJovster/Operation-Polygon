@@ -7,6 +7,7 @@ using OperationPolygon.Core;
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace OperationPolygon.Combat 
 {
@@ -14,6 +15,7 @@ namespace OperationPolygon.Combat
     {
         //camera
         [SerializeField] private CinemachineVirtualCamera aimCamera;
+        Cinemachine3rdPersonFollow followComponent;
 
         //components
         private Inputs input;
@@ -36,13 +38,14 @@ namespace OperationPolygon.Combat
                 [SerializeField] private float aimSprintSpeed = 2.65f;*/
         [SerializeField] private float animLerpTime = 10f;
         [SerializeField] private float rigWeightLerpTime = 20f;
-        [SerializeField] private float shoulderSwitchTime; 
+        [SerializeField, Range(0f, 2f)] private float shoulderSwitchTime = 1f; 
         private float aimRigWeight;
         private bool weaponEquipped = true;
 
         //serialized for testing
         [SerializeField] private bool isAiming = false;
         [SerializeField] private bool shouldersSwapped = false;
+        [SerializeField] private bool isSwitchingShoulders = false;
 
         //LayerMask;
         [SerializeField] private LayerMask targetLayerMask = new LayerMask();
@@ -65,6 +68,7 @@ namespace OperationPolygon.Combat
             input = GetComponent<Inputs>();
             controller = GetComponent<ThirdPersonController>();
             health = GetComponent<Health>();
+            followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
         }
 
         private void Start()
@@ -76,13 +80,13 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-            ShoulderSwitch();
+            
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
         }
 
         private void FixedUpdate()
         {
-
+            ShoulderSwitch();
         }
 
         private void AimState()
@@ -126,31 +130,48 @@ namespace OperationPolygon.Combat
                 animator.SetLayerWeight(upperBodyLayerindex, Mathf.Lerp(animator.GetLayerWeight(upperBodyLayerindex), weightOn, Time.deltaTime * animLerpTime));
             }
         }
-        //why add crouch here? Because the ThirdPersonController doesn't have an animator reference on it.
-        //it would be more 
 
         private void ShoulderSwitch()
         {
-            if (input.aim && input.switchShoulders && Time.timeScale == 1)
+            if (input.aim && Input.GetMouseButtonDown(2) && Time.timeScale == 1 && !isSwitchingShoulders)
             {
-                shouldersSwapped = !shouldersSwapped;
-                Cinemachine3rdPersonFollow followComponent = aimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
-                if (followComponent.CameraSide == 0f || followComponent.CameraSide == 1f)
-                {
-                    if (!shouldersSwapped)
-                    {
-                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, shoulderSwitchTime / Time.deltaTime); //magic number - make exposed variables later
-                        input.switchShoulders = false;
-                    }
-                    else if (shouldersSwapped)
-                    {
-                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, shoulderSwitchTime / Time.deltaTime);
-                        input.switchShoulders = false;
-                    }
-                }
+                
+                StartCoroutine(SwitchShouldersRoutine());
             }
         }
 
+        private IEnumerator SwitchShouldersRoutine()
+        {
+            isSwitchingShoulders = true;
+           
+            if (followComponent.CameraSide == 0f || followComponent.CameraSide == 1f)
+            {
+                if (!shouldersSwapped)
+                {
+                    float elapsedTime = 0f;
+                    while (elapsedTime < shoulderSwitchTime)
+                    {
+                        elapsedTime += Time.deltaTime / shoulderSwitchTime;
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, elapsedTime);
+                        yield return null;
+                    }
+                    isSwitchingShoulders = false;
+                    shouldersSwapped = !shouldersSwapped;
+                }
+                else if (shouldersSwapped)
+                {
+                    float elapsedTime = 0f;
+                    while (elapsedTime < shoulderSwitchTime)
+                    {
+                        elapsedTime += Time.deltaTime / shoulderSwitchTime;
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, elapsedTime);
+                        yield return null;
+                    }
+                    isSwitchingShoulders = false;
+                    shouldersSwapped = !shouldersSwapped;
+                }
+            }
+        }
 
         //public getters
 
