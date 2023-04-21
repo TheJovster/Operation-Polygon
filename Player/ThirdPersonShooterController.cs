@@ -80,13 +80,15 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-            
+         
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
+            ShoulderSwitch();
+            IsSwitchingShouldersTimer();
         }
 
         private void FixedUpdate()
         {
-            ShoulderSwitch();
+            
         }
 
         private void AimState()
@@ -144,15 +146,15 @@ namespace OperationPolygon.Combat
         {
             isSwitchingShoulders = true;
            
-            if (followComponent.CameraSide == 0f || followComponent.CameraSide == 1f)
+            if (followComponent.CameraSide <= 0.1f || followComponent.CameraSide >= .9f)
             {
                 if (!shouldersSwapped)
                 {
                     float elapsedTime = 0f;
                     while (elapsedTime < shoulderSwitchTime)
                     {
-                        elapsedTime += Time.deltaTime / shoulderSwitchTime;
-                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, elapsedTime);
+                        elapsedTime += Time.deltaTime;
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 0f, elapsedTime );
                         yield return null;
                     }
                     isSwitchingShoulders = false;
@@ -163,12 +165,25 @@ namespace OperationPolygon.Combat
                     float elapsedTime = 0f;
                     while (elapsedTime < shoulderSwitchTime)
                     {
-                        elapsedTime += Time.deltaTime / shoulderSwitchTime;
-                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, elapsedTime);
+                        elapsedTime += Time.deltaTime;
+                        followComponent.CameraSide = Mathf.Lerp(followComponent.CameraSide, 1f, elapsedTime );
                         yield return null;
                     }
                     isSwitchingShoulders = false;
                     shouldersSwapped = !shouldersSwapped;
+                }
+            }
+        }
+
+        private void IsSwitchingShouldersTimer() 
+        {
+            if (isSwitchingShoulders) 
+            {
+                float timeSwitching = 0f;
+                timeSwitching += Time.deltaTime;
+                if(timeSwitching >= shoulderSwitchTime + .1f) 
+                {
+                    isSwitchingShoulders = false;
                 }
             }
         }
