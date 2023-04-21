@@ -1,6 +1,7 @@
 ﻿using Cinemachine;
 using OperationPolygon.Combat;
 using OperationPolygon.Core;
+using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
@@ -129,13 +130,14 @@ namespace StarterAssets
         private bool _hasAnimator;
 
         private ThirdPersonShooterController _thirdPersonShooterController;
-        private float _cineMachineYHeightOriginal;
+        private float _aimYHeightOriginal;
         [Header("CinemachineAimController")]
         [SerializeField] private CinemachineVirtualCamera _cmAimCamera;
         [SerializeField] private float _aimYHeightCrouching;
         [Header("Cinemachine FOV Variables")]
         [SerializeField] private CinemachineVirtualCamera _cmFollowCamera;
         private CinemachineImpulseSource _impulseSource;
+        private Cinemachine3rdPersonFollow _aimCamFollowComponent;
         private float _followCamOriginalFOV;
         [SerializeField] private float _followCamSprintFOV;
         [SerializeField] private float _sprintEffectTime;
@@ -145,6 +147,7 @@ namespace StarterAssets
         [SerializeField] private float _maxMoveSpeed = 5f;
         [SerializeField] private float _moveSpeedChangeRate = 10f;
         private float _lastMoveSpeedValue;
+        private bool _hasCrouched = false; 
 
         //others
         private InputDevice _currentDevice;
@@ -171,8 +174,9 @@ namespace StarterAssets
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
             _thirdPersonShooterController = GetComponent<ThirdPersonShooterController>();
-            _cineMachineYHeightOriginal = _cmAimCamera.transform.position.y;
-            
+            _aimYHeightOriginal = _cmAimCamera.transform.position.y;
+            _aimCamFollowComponent = _cmAimCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+            _aimYHeightOriginal = _aimCamFollowComponent.ShoulderOffset.y;
         }
 
         private void Start()
@@ -376,11 +380,8 @@ namespace StarterAssets
 
         private void ControlMoveSpeed() 
         {
- 
-
             float mouseWheelDelta = Input.mouseScrollDelta.y;
             
-            Debug.Log(mouseWheelDelta);
 
             if (mouseWheelDelta < 0f && !_thirdPersonShooterController.IsAiming())
             {
@@ -501,27 +502,48 @@ namespace StarterAssets
         {
             if (_input.crouch) 
             {
-                _isCrouching = !_isCrouching;
-                _input.crouch = false;
-
-                CinemachineVirtualCameraBase virtualCamBase = _cmAimCamera.GetComponent<CinemachineVirtualCameraBase>();
-                if (_isCrouching) 
+                if (_isCrouching || !_isCrouching) 
                 {
-                    _animator.SetBool("Crouch", true);
-                    CinemachineOrbitalTransposer vcOrbitalTransposer = virtualCamBase.GetComponent<CinemachineOrbitalTransposer>();
-                    if (vcOrbitalTransposer != null)
-                    vcOrbitalTransposer.m_FollowOffset.y = _aimYHeightCrouching;
-                }
-                else if (!_isCrouching) 
-                {
-                    _animator.SetBool("Crouch", false);
-                    CinemachineOrbitalTransposer vcOrbitalTransposer = virtualCamBase.GetComponent<CinemachineOrbitalTransposer>();
-                    if(vcOrbitalTransposer != null)
-                    vcOrbitalTransposer.m_FollowOffset.y = _cineMachineYHeightOriginal;
-                }
+                    _input.crouch = false;
+                    StartCoroutine(CrouchRoutine());
+                }                
             }
         }
 
+        private IEnumerator CrouchRoutine()  //solution was simpler than I thought - all I needed to do was aim for slighltly lower/higher values as checks
+        {
+            if (_aimCamFollowComponent.ShoulderOffset.y >= 0.225f && !_isCrouching)
+            {
+                _input.crouch = false;
+                _isCrouching = !_isCrouching;
+                float elapsedTime = 0f;
+                while (elapsedTime < .6f)
+                {
+                    _hasCrouched = true;
+                    elapsedTime += Time.deltaTime; 
+                    _aimCamFollowComponent.ShoulderOffset.y = 
+                        Mathf.Lerp(_aimCamFollowComponent.ShoulderOffset.y, _aimYHeightCrouching, elapsedTime); 
+                    _animator.SetBool("Crouch", true); 
+                    yield return null; 
+                }
+                
+            }
+            else if (_aimCamFollowComponent.ShoulderOffset.y <= -0.225f && _isCrouching)
+            {
+                _input.crouch = false;
+                _isCrouching = !_isCrouching;
+                float elapsedTime = 0f;
+                while (elapsedTime < 0.6f)
+                {
+                    elapsedTime += Time.deltaTime; 
+                    _aimCamFollowComponent.ShoulderOffset.y = 
+                        Mathf.Lerp(_aimCamFollowComponent.ShoulderOffset.y, _aimYHeightOriginal, elapsedTime); 
+                    _animator.SetBool("Crouch", false); 
+                    yield return null; 
+                }
+                
+            }
+        }
 
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
