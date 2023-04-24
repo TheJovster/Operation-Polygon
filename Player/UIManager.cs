@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timer;
     [SerializeField] private TextMeshProUGUI rankText;
     [SerializeField] private TextMeshProUGUI fragCountText;
+    [SerializeField] private TextMeshProUGUI healthPacks;
     [Header("Image Components")]
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
@@ -26,6 +27,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject victoryMenu;
 
     private AmmoInventory ammoInventory;
+    private ItemInventory itemInventory;
     private GameManager gameManager;
     private Health health;
     private Stamina stamina;
@@ -36,6 +38,7 @@ public class UIManager : MonoBehaviour
         stamina = GetComponent<Stamina>();
         gameManager = FindObjectOfType<GameManager>();
         fragCount = GetComponent<FragCount>();
+        itemInventory = GetComponent<ItemInventory>();
         pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         victoryMenu.SetActive(false);
@@ -57,6 +60,9 @@ public class UIManager : MonoBehaviour
         staminaBar.fillAmount = stamina.GetStaminaPercentage();
         timer.text = gameManager.GetCurrentTime().ToString("0.0");
         fragCountText.text = fragCount.GetFragCount().ToString();
+        healthPacks.text = itemInventory.NumberOfHealthPacks.ToString();
+        //This may seem inconsistent - that's because I didn't set FragCount as a property, but instead
+        //the int is being retrieved through a getter method.
     }
 
     public void ShowPauseMenu() 

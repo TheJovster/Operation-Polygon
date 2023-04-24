@@ -283,6 +283,11 @@ namespace OperationPolygon.Core
             return currentHealth;
         }
 
+        public int GetMaxHealth() 
+        {
+            return maxHealth;
+        }
+
         //player-specific coroutines
         private IEnumerator PlayerTriggerGetHit() 
         {

@@ -50,6 +50,10 @@ namespace OperationPolygon.Combat
         //serialized for testing purposes
         [SerializeField] private int currentAmmoInMag;
 
+        [Header("Flashlight variables and components")]
+        [SerializeField] private Light flashLightSource;
+        private bool flashLightOn = false;
+
         private bool isReloading = false;
 
         //private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
@@ -70,6 +74,10 @@ namespace OperationPolygon.Combat
             inputActions.Player.Shoot.performed += OnShoot;
             inputActions.Player.Reload.performed += OnReload;
             inputActions.Player.Reload.canceled -= OnReload;
+            if (!flashLightOn) 
+            {
+                flashLightSource.enabled = false;
+            }
         }
 
         private void Start()
@@ -95,6 +103,10 @@ namespace OperationPolygon.Combat
             if (!input.shoot) 
             {
                 ResetMuzzlePointRotation();
+            }
+            if (Input.GetKeyDown(KeyCode.L)) 
+            {
+                ToggleFlashlight();
             }
         }
 
@@ -236,6 +248,19 @@ namespace OperationPolygon.Combat
                 currentAmmoInMag = ammoInventory.GetCurrentAmmoInInventory();
             }
             ammoInventory.RemoveAmmo(ammoToRemove);
+        }
+
+        private void ToggleFlashlight() 
+        {
+            flashLightOn = !flashLightOn;
+            if (flashLightOn) 
+            {
+                flashLightSource.enabled = true;
+            }
+            else if (!flashLightOn) 
+            {
+                flashLightSource.enabled = false;
+            }
         }
 
         //public getter classes
