@@ -40,7 +40,7 @@ namespace OperationPolygon.Combat
         private InputHandler inputActions;
         private PlayerInput playerInput;
 
-        [Header("Variables")]
+        [Header("Small Arms Variables")]
         [SerializeField] private bool isSemi = false;
         [SerializeField] private float fireRate; //rate of fire of the weapon
         private float fireRateWhenEmpty = .5f; //this is going to slow down the playing of the PlayEmptyAndReturn method.
@@ -49,6 +49,11 @@ namespace OperationPolygon.Combat
         [SerializeField] private int magSize = 30;
         //serialized for testing purposes
         [SerializeField] private int currentAmmoInMag;
+        [Header("Launcher variables")]
+        [SerializeField] private bool isLauncher = false;
+        [SerializeField] private GameObject grenadePrefab;
+        [SerializeField] private float launchForce = 10f;
+        [SerializeField, Range(30f, 75f)] private float launchAngle = 45f;
 
         [Header("Flashlight variables and components")]
         [SerializeField] private Light flashLightSource;
@@ -161,7 +166,7 @@ namespace OperationPolygon.Combat
 
         private void ShootAction() //shoot action contains all of the logic for shooting.
         {
-            if (!isReloading) 
+            if (!isReloading && !isLauncher)  
             {
                 timeSinceLastShot = 0;
                 Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
@@ -180,6 +185,34 @@ namespace OperationPolygon.Combat
 
                 }
             }
+            else if(!isReloading && isLauncher) 
+            {
+                LaunchProjectile();
+                if (ammoInventory.GetCurrentAmmoInInventory() != 0 && currentAmmoInMag <= 0)
+                {
+                    isReloading = true;
+                    StartCoroutine(ReloadAnimationWaitTime());
+                }
+            }
+        }
+
+        private void LaunchProjectile() //this is made for the shoot action
+        {
+            GameObject projectile = Instantiate(grenadePrefab, transform.position, Quaternion.identity);
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            float radianAngle = launchAngle * Mathf.Deg2Rad;
+            Vector3 launchDirection = new Vector3(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle), 0f);
+            rb.AddForce(launchDirection * launchForce, ForceMode.Impulse);
+            currentAmmoInMag--;
+
+            //TODO: Create ExplosiveProjectileClass
+            //the projectile, upon hitting the ground is supposed to do:
+            //coroutine
+            //do a sphere cast and find all of the objects tagged enemy caught in the cast.
+            //take away all of the health - do 200f damage;
+            //wait .05 seconds
+            //take all of the rigid bodies and add relative force to them, thus making the fly away
+            //destroy game object after .5f
         }
 
         public void OnReload(InputAction.CallbackContext context)
