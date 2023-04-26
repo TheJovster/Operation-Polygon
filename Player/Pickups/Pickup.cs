@@ -9,7 +9,6 @@ namespace OperationPolygon.Core
         [Header("Resource Type")]
         [SerializeField] private bool isAmmo;
         [SerializeField] private bool isHealth;
-        [SerializeField] private bool isGrenades;
 
         [Header("Resource Ammount")]
         [SerializeField] private int ammoToAdd;
@@ -46,11 +45,6 @@ namespace OperationPolygon.Core
                 else if (isHealth) 
                 {
                     other.GetComponent<Health>().AddHealth(healthToAdd);
-                    Destroy(gameObject);
-                }
-                else if (isGrenades) 
-                {
-                    other.GetComponent<AmmoInventory>().AddGrenades(grenadesToAdd);
                     Destroy(gameObject);
                 }
                 else if(isAmmo && isHealth) 
