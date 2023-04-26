@@ -282,7 +282,7 @@ namespace StarterAssets
 
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina
+            // set target speed based on move speed, sprint speed and if sprint is pressed && has stamina && is not crouching && is not aiming
             float targetSpeed = _input.sprint && _stamina.HasStamina() && !_isCrouching && Grounded && !_thirdPersonShooterController.IsAiming()
                 ? SprintSpeed : MoveSpeed;
             //ControlMoveSpeed is only available with mouse and keyboard for now
@@ -378,50 +378,7 @@ namespace StarterAssets
             }
         }
 
-        private void ControlMoveSpeed() 
-        {
-            float mouseWheelDelta = Input.mouseScrollDelta.y;
-            
 
-            if (mouseWheelDelta < 0f && !_thirdPersonShooterController.IsAiming())
-            {
-                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
-                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
-                _lastMoveSpeedValue = MoveSpeed;
-            }
-            else if (mouseWheelDelta > 0f && !_thirdPersonShooterController.IsAiming())
-            {
-                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
-                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
-                _lastMoveSpeedValue = MoveSpeed;
-            }
-            
-            if (_thirdPersonShooterController.IsAiming()) 
-            {
-                MoveSpeed = _minMoveSpeed;
-            }
-            else 
-            {
-                MoveSpeed = _lastMoveSpeedValue;
-            }
-        }
-
-        private void SprintEffect()
-        {
-            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
-            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
-                Mathf.Lerp(currentFOV, _followCamSprintFOV, _sprintEffectTime * Time.deltaTime);
-            _impulseSource.GenerateImpulse();
-            
-        }
-
-        private void CancelSprintEffect() 
-        {
-            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
-            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
-                Mathf.Lerp(currentFOV, _followCamOriginalFOV, _sprintEffectTime * Time.deltaTime);
-            
-        }
 
         private void JumpAndGravity() //changed the name of the method
         {
@@ -498,15 +455,19 @@ namespace StarterAssets
             }
         }
 
-        private void Crouch() //written by me
+        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+        {
+            if (lfAngle < -360f) lfAngle += 360f;
+            if (lfAngle > 360f) lfAngle -= 360f;
+            return Mathf.Clamp(lfAngle, lfMin, lfMax);
+        }
+
+        //code written by me - Jovan Aleksic (TheJovster)
+        private void Crouch() 
         {
             if (_input.crouch) 
             {
-                if (_isCrouching || !_isCrouching) 
-                {
-                    _input.crouch = false;
-                    StartCoroutine(CrouchRoutine());
-                }                
+                StartCoroutine(CrouchRoutine());
             }
         }
 
@@ -517,7 +478,7 @@ namespace StarterAssets
                 _input.crouch = false;
                 _isCrouching = !_isCrouching;
                 float elapsedTime = 0f;
-                while (elapsedTime < .6f)
+                while (elapsedTime < 0.6f)
                 {
                     _hasCrouched = true;
                     elapsedTime += Time.deltaTime; 
@@ -545,15 +506,51 @@ namespace StarterAssets
             }
         }
 
-        private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+        private void ControlMoveSpeed()
         {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
+            float mouseWheelDelta = Input.mouseScrollDelta.y;
+
+
+            if (mouseWheelDelta < 0f && !_thirdPersonShooterController.IsAiming())
+            {
+                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+                _lastMoveSpeedValue = MoveSpeed;
+            }
+            else if (mouseWheelDelta > 0f && !_thirdPersonShooterController.IsAiming())
+            {
+                MoveSpeed += mouseWheelDelta * _moveSpeedChangeRate;
+                MoveSpeed = Mathf.Clamp(MoveSpeed, _minMoveSpeed, _maxMoveSpeed);
+                _lastMoveSpeedValue = MoveSpeed;
+            }
+
+            if (_thirdPersonShooterController.IsAiming())
+            {
+                MoveSpeed = _minMoveSpeed;
+            }
+            else
+            {
+                MoveSpeed = _lastMoveSpeedValue;
+            }
         }
 
+        private void SprintEffect()
+        {
+            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
+                Mathf.Lerp(currentFOV, _followCamSprintFOV, _sprintEffectTime * Time.deltaTime);
+            _impulseSource.GenerateImpulse();
 
-        //code written by me - Jovan Aleksic (TheJovster)
+        }
+
+        private void CancelSprintEffect()
+        {
+            float currentFOV = _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            _cmFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView =
+                Mathf.Lerp(currentFOV, _followCamOriginalFOV, _sprintEffectTime * Time.deltaTime);
+
+        }
+
         private void OnDrawGizmosSelected()
         {
             Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
@@ -567,6 +564,8 @@ namespace StarterAssets
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
         }
+
+        //animation Events - Came with the Asset
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
@@ -626,11 +625,5 @@ namespace StarterAssets
         {
             SprintSpeed = 5.335f;
         }
-
-
-
-        //animation events
-
-
     }
 }
