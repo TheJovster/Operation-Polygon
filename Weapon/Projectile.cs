@@ -16,12 +16,12 @@ namespace OperationPolygon.Combat
 
 
         private Rigidbody rigidBody;
-        private Weapon weapon;
+        private Weapon playerWeapon;
 
         private void Awake()
         {
             rigidBody = GetComponent<Rigidbody>();
-
+            playerWeapon = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>();
         }
 
         private void Start()
@@ -52,9 +52,7 @@ namespace OperationPolygon.Combat
                 other.
                 collider.
                 GetComponent<Health>()?.
-                TakeDamage(
-                GameObject.FindGameObjectWithTag("PlayerWeapon").
-                GetComponent<Weapon>().
+                TakeDamage(playerWeapon.
                 GetWeaponDamage());
                 //not very performant
                 //difficult to read, but I think it's useable in such a small project
@@ -67,8 +65,7 @@ namespace OperationPolygon.Combat
                 collider.
                 GetComponent<Health>()?.
                 TakeDamage(
-                GameObject.FindGameObjectWithTag("PlayerWeapon").
-                GetComponent<Weapon>().
+                playerWeapon.
                 GetWeaponDamage());
                 //not very performant
                 //difficult to read, but I think it's useable in such a small project

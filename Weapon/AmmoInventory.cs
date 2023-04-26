@@ -8,11 +8,26 @@ namespace OperationPolygon.Combat
     {
         [SerializeField] private int currentAmmoInInventory;
         [SerializeField] private int startingAmmo;
+        [SerializeField] private int startingGrenades;
         [SerializeField] private int maxAmmoInInventory;
+        [SerializeField] private int maxGrenadesInInventory;
+        private Weapon currentWeapon;
 
         private void Start()
         {
-            currentAmmoInInventory = startingAmmo;
+            SetupCurrentWeaponData();
+
+        }
+
+        public void SetupCurrentWeaponData()
+        {
+            currentWeapon = GetComponentInChildren<Weapon>();
+            if (!currentWeapon.IsLauncher)
+                currentAmmoInInventory = startingAmmo;
+            else if (currentWeapon.IsLauncher)
+            {
+                currentAmmoInInventory = startingGrenades;
+            }
         }
 
         public void AddAmmo(int ammoToAdd) 
@@ -21,6 +36,15 @@ namespace OperationPolygon.Combat
             if(currentAmmoInInventory >= maxAmmoInInventory) 
             {
                 currentAmmoInInventory = maxAmmoInInventory;
+            }
+        }
+
+        public void AddGrenades(int ammoToAdd) 
+        {
+            currentAmmoInInventory += ammoToAdd;
+            if(currentAmmoInInventory >= maxGrenadesInInventory) 
+            {
+                currentAmmoInInventory = maxGrenadesInInventory;
             }
         }
 
@@ -38,5 +62,6 @@ namespace OperationPolygon.Combat
         {
             return currentAmmoInInventory;
         }
+
     }
 }

@@ -9,9 +9,11 @@ namespace OperationPolygon.Core
         [Header("Resource Type")]
         [SerializeField] private bool isAmmo;
         [SerializeField] private bool isHealth;
+        [SerializeField] private bool isGrenades;
 
         [Header("Resource Ammount")]
         [SerializeField] private int ammoToAdd;
+        [SerializeField] private int grenadesToAdd;
         [SerializeField] private int healthToAdd;
 
         [Header("VFX")]
@@ -37,8 +39,6 @@ namespace OperationPolygon.Core
                 if (isAmmo)
                 {
                     other.GetComponent<AmmoInventory>().AddAmmo(ammoToAdd);
-                    //GameObject vfxInstance = Instantiate(ammoVFX, transform.position, Quaternion.Identity);
-                    //Destroy(vfxInstance, vfxInstance.GetComponent<ParticleSystem>().main.duration);
                     GameObject.FindGameObjectWithTag("GameSoundManager").GetComponent<AudioSource>().PlayOneShot(ammoSFX); 
                     //finding game objects with tags is fairly cheap and efficient, so I don't have to use a singleton here.
                     Destroy(gameObject); 
@@ -48,12 +48,18 @@ namespace OperationPolygon.Core
                     other.GetComponent<Health>().AddHealth(healthToAdd);
                     Destroy(gameObject);
                 }
+                else if (isGrenades) 
+                {
+                    other.GetComponent<AmmoInventory>().AddGrenades(grenadesToAdd);
+                    Destroy(gameObject);
+                }
                 else if(isAmmo && isHealth) 
                 {
                     other.GetComponent<Health>().AddHealth(healthToAdd);
                     other.GetComponent<AmmoInventory>().AddAmmo(ammoToAdd);
                     Destroy(gameObject);
                 }
+
             }
         }
     }

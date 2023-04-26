@@ -50,10 +50,10 @@ namespace OperationPolygon.Combat
         //serialized for testing purposes
         [SerializeField] private int currentAmmoInMag;
         [Header("Launcher variables")]
-        [SerializeField] private bool isLauncher = false;
         [SerializeField] private GameObject grenadePrefab;
+        [field: SerializeField] public bool IsLauncher { get; private set; }
         [SerializeField] private float launchForce = 10f;
-        [SerializeField, Range(30f, 75f)] private float launchAngle = 45f;
+        [SerializeField, Range(15f, 75f)] private float launchAngle = 45f;
 
         [Header("Flashlight variables and components")]
         [SerializeField] private Light flashLightSource;
@@ -87,6 +87,7 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
+            ammoInventory.SetupCurrentWeaponData();
             currentAmmoInMag = magSize;
             timeSinceLastShot = fireRate;
             if (animOverride != null)
@@ -166,7 +167,7 @@ namespace OperationPolygon.Combat
 
         private void ShootAction() //shoot action contains all of the logic for shooting.
         {
-            if (!isReloading && !isLauncher)  
+            if (!isReloading && !IsLauncher)  
             {
                 timeSinceLastShot = 0;
                 Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
@@ -185,8 +186,9 @@ namespace OperationPolygon.Combat
 
                 }
             }
-            else if(!isReloading && isLauncher) 
+            else if(!isReloading && IsLauncher) 
             {
+                if(currentAmmoInMag > 0)
                 LaunchProjectile();
                 if (ammoInventory.GetCurrentAmmoInInventory() != 0 && currentAmmoInMag <= 0)
                 {
@@ -198,10 +200,12 @@ namespace OperationPolygon.Combat
 
         private void LaunchProjectile() //this is made for the shoot action
         {
-            GameObject projectile = Instantiate(grenadePrefab, transform.position, Quaternion.identity);
+            timeSinceLastShot = 0;
+            weaponAudioSource.PlayOneShot(weaponShotSounds[0]);
+            GameObject projectile = Instantiate(grenadePrefab, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward));
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             float radianAngle = launchAngle * Mathf.Deg2Rad;
-            Vector3 launchDirection = new Vector3(Mathf.Cos(radianAngle), Mathf.Sin(radianAngle), 0f);
+            Vector3 launchDirection = muzzlePoint.forward * Mathf.Cos(radianAngle) + muzzlePoint.up * Mathf.Sin(radianAngle);
             rb.AddForce(launchDirection * launchForce, ForceMode.Impulse);
             currentAmmoInMag--;
 
@@ -217,15 +221,6 @@ namespace OperationPolygon.Combat
 
         public void OnReload(InputAction.CallbackContext context)
         {
-            //maths for max ammo in reserve, and logic, etc will go here.
-            //current ammo in backpack
-            //current ammo in backpack -= currentAmmo in mag;
-            //current ammo in backpack < magSize
-            //currentAmmoInMag = current ammo in backpack
-            //current Ammo in backpack == 0;
-            //if(current ammo in backpack == 0) return;
-            //the reload system is very simple (for now), will try to add animations and anim rigging later.
-            //if(currentAmmoInMag == mag size) return;
             if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmoInInventory() > 0)
             {
                 isReloading = true;
