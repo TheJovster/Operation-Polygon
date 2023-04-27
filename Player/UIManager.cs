@@ -28,7 +28,6 @@ public class UIManager : MonoBehaviour
 
     private AmmoInventory ammoInventory;
     private ItemInventory itemInventory;
-    private WeaponInventory weaponInventory;
     private GameManager gameManager;
     private Health health;
     private Stamina stamina;
@@ -40,7 +39,6 @@ public class UIManager : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         fragCount = GetComponent<FragCount>();
         itemInventory = GetComponent<ItemInventory>();
-        weaponInventory = GetComponent<WeaponInventory>();
         pauseMenu.SetActive(false);
         gameOverMenu.SetActive(false);
         victoryMenu.SetActive(false);
@@ -49,7 +47,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        currentWeapon = weaponInventory.CurrentWeapon;
+        currentWeapon = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>();
         ammoInventory = GetComponent<AmmoInventory>();
     }
 
@@ -87,11 +85,5 @@ public class UIManager : MonoBehaviour
     public void ShowVictoryScreen() 
     {
         victoryMenu.SetActive(true);
-    }
-
-    public void InitalizeUI() 
-    {
-        currentWeapon = weaponInventory.CurrentWeapon;
-        ammoInventory = GetComponent<AmmoInventory>();
     }
 }

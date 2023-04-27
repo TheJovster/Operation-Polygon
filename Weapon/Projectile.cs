@@ -21,8 +21,7 @@ namespace OperationPolygon.Combat
         private void Awake()
         {
             rigidBody = GetComponent<Rigidbody>();
-            playerWeapon = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Weapon>();
-            Debug.Log(playerWeapon);
+            playerWeapon = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>();
         }
 
         private void Start()
