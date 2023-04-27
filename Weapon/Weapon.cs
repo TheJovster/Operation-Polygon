@@ -76,20 +76,7 @@ namespace OperationPolygon.Combat
         //private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
         private float animTransitionTime = .25f; //using this value for Animator transition time.
 
-        private void OnEnable()
-        {
-            weaponInventory.SetCurrentWeapon(this);
-            ammoInventory.InitializeCurrentWeaponData();
-            uiManager.InitalizeUI();
-            isReloading = false;
-            timeSinceLastShot = fireRate;
-        }
 
-        private void OnDisable()
-        {
-            isReloading = true;
-            timeSinceLastShot = 0;
-        }
 
         private void Awake()
         {
@@ -113,6 +100,21 @@ namespace OperationPolygon.Combat
                 flashLightSource.enabled = false;
             }
             //weaponInventory.SetCurrentWeapon(this);
+        }
+
+        private void OnEnable()
+        {
+            weaponInventory.SetCurrentWeapon(this);
+            ammoInventory.InitializeCurrentWeaponData();
+            uiManager.InitalizeUI();
+            isReloading = false;
+            timeSinceLastShot = fireRate;
+        }
+
+        private void OnDisable()
+        {
+            isReloading = true;
+            timeSinceLastShot = 0;
         }
 
         private void Start()

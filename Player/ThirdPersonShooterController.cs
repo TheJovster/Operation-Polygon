@@ -34,13 +34,11 @@ namespace OperationPolygon.Combat
         [SerializeField] private float maximumAimDistance = 600f;
         [SerializeField] private float defaultMouseSensitivity = 1f;
         [SerializeField] private float mouseAimSensitivity = .333f;
-        /*        [SerializeField] private float aimMoveSpeed = 1f;
-                [SerializeField] private float aimSprintSpeed = 2.65f;*/
         [SerializeField] private float animLerpTime = 10f;
         [SerializeField] private float rigWeightLerpTime = 20f;
         [SerializeField, Range(0f, 2f)] private float shoulderSwitchTime = 1f; 
         private float aimRigWeight;
-        private bool weaponEquipped = true;
+        //private bool weaponEquipped = true;
 
         //serialized for testing
         [SerializeField] private bool isAiming = false;
