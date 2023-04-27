@@ -79,7 +79,7 @@ namespace OperationPolygon.Combat
         private void OnEnable()
         {
             weaponInventory.SetCurrentWeapon(this);
-            ammoInventory.SetupCurrentWeaponData();
+            ammoInventory.InitializeCurrentWeaponData();
             uiManager.InitalizeUI();
             isReloading = false;
             timeSinceLastShot = fireRate;
@@ -117,7 +117,6 @@ namespace OperationPolygon.Combat
 
         private void Start()
         {
-            ammoInventory.SetupCurrentWeaponData();
             currentAmmoInMag = magSize;
             timeSinceLastShot = fireRate;
             if (animOverride != null)

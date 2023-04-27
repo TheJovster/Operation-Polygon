@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace OperationPolygon.Combat 
@@ -25,6 +23,7 @@ namespace OperationPolygon.Combat
 
         private void Awake()
         {
+            
             weaponInventory = GetComponent<WeaponInventory>();
             currentWeapon = weaponInventory.CurrentWeapon;
         }
@@ -32,7 +31,6 @@ namespace OperationPolygon.Combat
         private void Start()
         {
             InitializeCurrentWeaponData();
-
         }
 
         public void InitializeCurrentWeaponData()
@@ -57,29 +55,28 @@ namespace OperationPolygon.Combat
             }
         }
 
-        public void SetupCurrentWeaponData()
+        public void SaveCurrentAmmo()
         {
             currentWeapon = weaponInventory.CurrentWeapon;
-            switch (currentWeapon.WeaponClass) 
+            switch (currentWeapon.WeaponClass)
             {
                 case WeaponClass.AssaultRifle:
-                    currentAmmoInUse = currentAssaultRifleAmmo;
+                    currentAssaultRifleAmmo = currentAmmoInUse;
                     break;
 
                 case WeaponClass.SMG:
-                    currentAmmoInUse = currentSMGAmmo;
+                    currentSMGAmmo = currentAmmoInUse;
                     break;
                 case WeaponClass.LMG:
-                    currentAmmoInUse = currentLMGAmmo;
+                    currentLMGAmmo = currentAmmoInUse; ;
                     break;
                 case WeaponClass.Launcher:
-                    currentAmmoInUse = currentGrenades;
+                    currentGrenades = currentAmmoInUse;
                     break;
 
             }
         }
-
-        public void AddAmmo(int ammoToAdd) 
+            public void AddAmmo(int ammoToAdd) 
         {
             switch (currentWeapon.WeaponClass)
             {

@@ -7,10 +7,17 @@ namespace OperationPolygon.Combat
 {
     public class WeaponInventory : MonoBehaviour
     {
-        [SerializeField] private Weapon[] weaponsList; //I'm using a List because it's easier to expand at runtime than Arrays.
+        [SerializeField] private Weapon[] weaponsList; //make sure that your weapoinsList array's length matches the number of cases in weapon Switching.
         [Header("The object that contains the weapon game objects. In this case, it's Hand_R game object in the PlayerArmature child object named Root.")]
         [SerializeField] private Transform weaponContainer;
         public Weapon CurrentWeapon { get; private set; }
+        private AmmoInventory ammoInventory;
+        int weaponIndex = 0;
+
+        private void Awake()
+        {
+            ammoInventory = GetComponent<AmmoInventory>();
+        }
 
         public void SetCurrentWeapon(Weapon weapon) 
         {
@@ -20,39 +27,103 @@ namespace OperationPolygon.Combat
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) 
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                foreach(Transform child in weaponContainer) 
-                {
-                    child.gameObject.SetActive(false);
-                }
-                weaponsList[0].gameObject.SetActive(true);
+                DecrementWeapon();
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                foreach (Transform child in weaponContainer)
-                {
-                    child.gameObject.SetActive(false);
-                }
-                weaponsList[1].gameObject.SetActive(true);
+                IncrementWeapon();
             }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
+
+        }
+
+        private void IncrementWeapon() //adds +1 to weapon index and switches the current weapon
+        {
+            weaponIndex++;
+            if(weaponIndex > weaponsList.Length - 1) 
             {
-                foreach (Transform child in weaponContainer)
-                {
-                    child.gameObject.SetActive(false);
-                }
-                weaponsList[2].gameObject.SetActive(true);
+                weaponIndex = 0;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha4)) 
+            switch (weaponIndex) 
             {
-                foreach (Transform child in weaponContainer)
-                {
-                    child.gameObject.SetActive(false);
-                }
-                weaponsList[3].gameObject.SetActive(true);
+                case 0:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 1:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 2:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 3:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
             }
         }
 
+        private void DecrementWeapon() //substracts +1 from the weapon index and switches to the desired weapon
+        {
+            weaponIndex--;
+            if (weaponIndex < 0)
+            {
+                weaponIndex = weaponsList.Length - 1;
+            }
+            switch (weaponIndex)
+            {
+                case 0:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 1:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 2:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+                case 3:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    break;
+            }
+        }
     }
 }

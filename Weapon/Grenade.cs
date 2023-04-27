@@ -9,7 +9,6 @@ namespace OperationPolygon.Combat
     {
         [SerializeField] private float explosionRadius = 5f;
         [SerializeField] private float explosionForce = 100f;
-        [SerializeField] private float explosionDuration = 0.5f;
         [SerializeField] private LayerMask layerMask;
         [SerializeField] private GameObject explosionSFX;
         private Weapon playerWeapon;
