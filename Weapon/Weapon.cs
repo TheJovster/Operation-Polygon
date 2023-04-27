@@ -7,15 +7,26 @@ using System;
 
 namespace OperationPolygon.Combat 
 {
+    [HideInInspector]
+    public enum WeaponClass
+    {
+        AssaultRifle,
+        SMG,
+        LMG,
+        SniperRifle,
+        Launcher
+    }
+    
     public class Weapon : MonoBehaviour
     {
         private int reloadAnimHash = Animator.StringToHash("ReloadAnim");
 
         [Header("Main Weapon Information & Overrides")]
-        [SerializeField] private string weaponName;
-        [SerializeField] private WeaponClass weaponClass;
         [SerializeField] private AnimatorOverrideController animOverride;
+        [field: SerializeField] public string WeaponName { get; private set; }
+        [field: SerializeField] public WeaponClass WeaponClass { get; private set; }
         private AmmoInventory ammoInventory;
+        private WeaponInventory weaponInventory;
 
         [Header("Components")]
         [SerializeField] private Transform muzzlePoint; //the bullet spawns at this location.
@@ -24,6 +35,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private AimTarget aimTarget;
         private WeaponRecoilHandler recoilHandler;
         private WeaponSpread spreadHandler;
+        private UIManager uiManager;
 
         [Header("FX Components")]
         [SerializeField] private ParticleSystem muzzleFlashFX;
@@ -64,6 +76,21 @@ namespace OperationPolygon.Combat
         //private float animLerpTime = 10f; //using a larger value because I'm using this value for a Lerp function
         private float animTransitionTime = .25f; //using this value for Animator transition time.
 
+        private void OnEnable()
+        {
+            weaponInventory.SetCurrentWeapon(this);
+            ammoInventory.SetupCurrentWeaponData();
+            uiManager.InitalizeUI();
+            isReloading = false;
+            timeSinceLastShot = fireRate;
+        }
+
+        private void OnDisable()
+        {
+            isReloading = true;
+            timeSinceLastShot = 0;
+        }
+
         private void Awake()
         {
             input = GetComponentInParent<Inputs>();
@@ -71,18 +98,21 @@ namespace OperationPolygon.Combat
             aimTarget = GetComponentInParent<AimTarget>();
             shooter = GetComponentInParent<ThirdPersonShooterController>();
             ammoInventory = GetComponentInParent<AmmoInventory>();
+            weaponInventory = GetComponentInParent<WeaponInventory>();
             recoilHandler = GetComponent<WeaponRecoilHandler>();
             spreadHandler = GetComponent<WeaponSpread>();
+            uiManager = GetComponentInParent<UIManager>();
             inputActions = new InputHandler();
 
             inputActions.Player.Enable();
             inputActions.Player.Shoot.performed += OnShoot;
             inputActions.Player.Reload.performed += OnReload;
             inputActions.Player.Reload.canceled -= OnReload;
-            if (!flashLightOn) 
+            if (flashLightSource != null && !flashLightOn) 
             {
                 flashLightSource.enabled = false;
             }
+            //weaponInventory.SetCurrentWeapon(this);
         }
 
         private void Start()
@@ -94,7 +124,6 @@ namespace OperationPolygon.Combat
             {
                 shooter.GetAnimator().runtimeAnimatorController = animOverride;
             }
-
         }
 
         private void Update()
@@ -221,7 +250,7 @@ namespace OperationPolygon.Combat
 
         public void OnReload(InputAction.CallbackContext context)
         {
-            if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmoInInventory() > 0)
+            if (context.performed && currentAmmoInMag < magSize && ammoInventory.GetCurrentAmmoInInventory() > 0 && this.gameObject.activeInHierarchy)
             {
                 isReloading = true;
                 StartCoroutine(ReloadAnimationWaitTime());
@@ -280,15 +309,19 @@ namespace OperationPolygon.Combat
 
         private void ToggleFlashlight() 
         {
-            flashLightOn = !flashLightOn;
-            if (flashLightOn) 
+            if(flashLightSource != null) 
             {
-                flashLightSource.enabled = true;
+                flashLightOn = !flashLightOn;
+                if (flashLightOn)
+                {
+                    flashLightSource.enabled = true;
+                }
+                else if (!flashLightOn)
+                {
+                    flashLightSource.enabled = false;
+                }
             }
-            else if (!flashLightOn) 
-            {
-                flashLightSource.enabled = false;
-            }
+
         }
 
         //public getter classes

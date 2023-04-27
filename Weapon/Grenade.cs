@@ -14,9 +14,9 @@ namespace OperationPolygon.Combat
         [SerializeField] private GameObject explosionSFX;
         private Weapon playerWeapon;
 
-        private void Awake()
+        private void Start()
         {
-            playerWeapon = GameObject.FindGameObjectWithTag("PlayerWeapon").GetComponent<Weapon>();
+            playerWeapon = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Weapon>();
         }
 
         private void Explode(int damageToDeal)
