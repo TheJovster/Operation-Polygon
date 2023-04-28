@@ -8,6 +8,7 @@ using OperationPolygon.Core;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set;}
     
     private Weapon currentWeapon; //probably not the best practice, but this is done for testing purposes and will be refactored later.
     private FragCount fragCount;
@@ -15,7 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI ammoCount; //refactor names and everything later.
     [SerializeField] private TextMeshProUGUI ammoInInventoryCount;
     [SerializeField] private TextMeshProUGUI timer;
-    [SerializeField] private TextMeshProUGUI rankText;
+    [SerializeField] private TextMeshProUGUI currentWeaponText;
     [SerializeField] private TextMeshProUGUI fragCountText;
     [SerializeField] private TextMeshProUGUI healthPacks;
     [Header("Image Components")]
@@ -35,6 +36,7 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         health = GetComponent<Health>();
         stamina = GetComponent<Stamina>();
         gameManager = FindObjectOfType<GameManager>();
@@ -51,6 +53,12 @@ public class UIManager : MonoBehaviour
     {
         currentWeapon = weaponInventory.CurrentWeapon;
         ammoInventory = GetComponent<AmmoInventory>();
+        GetWeaponName();
+    }
+
+    public void GetWeaponName()
+    {
+        currentWeaponText.text = weaponInventory.CurrentWeapon.WeaponName;
     }
 
     // Update is called once per frame

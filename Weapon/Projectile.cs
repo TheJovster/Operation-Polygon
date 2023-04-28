@@ -22,7 +22,6 @@ namespace OperationPolygon.Combat
         {
             rigidBody = GetComponent<Rigidbody>();
             playerWeapon = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Weapon>();
-            Debug.Log(playerWeapon);
         }
 
         private void Start()

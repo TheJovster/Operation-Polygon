@@ -1,23 +1,27 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace OperationPolygon.Combat 
 {
+
     public class AmmoInventory : MonoBehaviour
     {
         private int currentAmmoInUse;
-
         private int currentAssaultRifleAmmo;
         private int currentSMGAmmo;
         private int currentLMGAmmo;
         private int currentGrenades;
+        private int currentSniperAmmo;
         [SerializeField] private int startingAssaultRifleAmmo;
         [SerializeField] private int startingSMGAmmo;
         [SerializeField] private int startingLMGAmmo;
         [SerializeField] private int startingGrenades;
+        [SerializeField] private int startingSniperAmmo;
         [SerializeField] private int maxAssaultRifleAmmoInInventory;
         [SerializeField] private int maxSMGAmmoInInventory;
         [SerializeField] private int maxLMGAmmoInInventory;
         [SerializeField] private int maxGrenadesInInventory;
+        [SerializeField] private int maxSniperAmmo;
         private Weapon currentWeapon;
         private WeaponInventory weaponInventory;
 
@@ -51,6 +55,9 @@ namespace OperationPolygon.Combat
                 case WeaponClass.Launcher:
                     currentAmmoInUse = currentGrenades;
                     break;
+                case WeaponClass.SniperRifle:
+                    currentAmmoInUse = currentSniperAmmo;
+                    break;
 
             }
         }
@@ -63,7 +70,6 @@ namespace OperationPolygon.Combat
                 case WeaponClass.AssaultRifle:
                     currentAssaultRifleAmmo = currentAmmoInUse;
                     break;
-
                 case WeaponClass.SMG:
                     currentSMGAmmo = currentAmmoInUse;
                     break;
@@ -73,10 +79,13 @@ namespace OperationPolygon.Combat
                 case WeaponClass.Launcher:
                     currentGrenades = currentAmmoInUse;
                     break;
-
+                case WeaponClass.SniperRifle:
+                    currentAmmoInUse = currentSniperAmmo;
+                    break;
             }
         }
-            public void AddAmmo(int ammoToAdd) 
+
+        public void AddAmmo(int ammoToAdd) 
         {
             switch (currentWeapon.WeaponClass)
             {
@@ -113,7 +122,14 @@ namespace OperationPolygon.Combat
                     }
                     currentAmmoInUse = currentGrenades;
                     break;
-
+                case WeaponClass.SniperRifle:
+                    currentSniperAmmo += ammoToAdd;
+                    if(currentSniperAmmo >= maxSniperAmmo) 
+                    {
+                        currentSniperAmmo = maxSniperAmmo;
+                    }
+                    currentAmmoInUse = currentSniperAmmo;
+                    break;
             }
         }
 

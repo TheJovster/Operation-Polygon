@@ -9,7 +9,6 @@ namespace OperationPolygon.Core
     {
         [SerializeField] private float currentStamina;
         [SerializeField] private float maxStamina = 100f;
-        [SerializeField] private float walkDrainRate = 3f;
         [SerializeField] private float runDrainRate = 6f;
         [SerializeField] private float regenRate = 1f;
         [SerializeField]private bool isMoving = false;

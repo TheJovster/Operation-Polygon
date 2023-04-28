@@ -12,6 +12,7 @@ namespace OperationPolygon.Combat
         [SerializeField] private Transform weaponContainer;
         public Weapon CurrentWeapon { get; private set; }
         private AmmoInventory ammoInventory;
+
         int weaponIndex = 0;
 
         private void Awake()
@@ -22,7 +23,6 @@ namespace OperationPolygon.Combat
         public void SetCurrentWeapon(Weapon weapon) 
         {
             CurrentWeapon = weapon;
-            Debug.Log("Current weapon is " + CurrentWeapon.WeaponName);
         }
 
         private void Update()
@@ -54,6 +54,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 1:
                     ammoInventory.SaveCurrentAmmo();
@@ -62,6 +63,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 2:
                     ammoInventory.SaveCurrentAmmo();
@@ -70,6 +72,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 3:
                     ammoInventory.SaveCurrentAmmo();
@@ -78,6 +81,25 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
+                    break;
+                case 4:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
+                    break;
+                case 5:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
             }
         }
@@ -98,6 +120,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 1:
                     ammoInventory.SaveCurrentAmmo();
@@ -106,6 +129,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 2:
                     ammoInventory.SaveCurrentAmmo();
@@ -114,6 +138,7 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
                 case 3:
                     ammoInventory.SaveCurrentAmmo();
@@ -122,7 +147,27 @@ namespace OperationPolygon.Combat
                         child.gameObject.SetActive(false);
                     }
                     weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
                     break;
+                case 4:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
+                    break;
+                case 5:
+                    ammoInventory.SaveCurrentAmmo();
+                    foreach (Transform child in weaponContainer)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    weaponsList[weaponIndex].gameObject.SetActive(true);
+                    UIManager.Instance.GetWeaponName();
+                    break;
+
             }
         }
     }

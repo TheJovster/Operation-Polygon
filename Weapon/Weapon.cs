@@ -131,7 +131,7 @@ namespace OperationPolygon.Combat
         {
             timeSinceLastShot += Time.deltaTime; //this is a constant timer that keeps updating timeSinceLastShot.
 
-            if (!isSemi && input.shoot && shooter.IsAiming())
+            if (!isSemi && input.shoot && shooter.IsAiming()) //automatic fire has to be setup like this because there needs to be a constant check if input.shoot is held && a constant check to see if timeSinceLastTime >= fireRate
             {
                 AutomaticFire();
             }
@@ -146,17 +146,7 @@ namespace OperationPolygon.Combat
             }
         }
 
-        private void AutomaticFire()
-        {
-            if (currentAmmoInMag > 0 && timeSinceLastShot >= fireRate)
-            {
-                ShootAction();
-            }
-            else if (currentAmmoInMag <= 0 && timeSinceLastShot >= fireRateWhenEmpty)
-            {
-                PlayWeaponEmptyAndReturn();
-            }
-        }
+
 
         private void PlayWeaponEmptyAndReturn()
         {
@@ -171,7 +161,7 @@ namespace OperationPolygon.Combat
             muzzlePoint.localEulerAngles = Vector3.zero;
         }
 
-        private void OnShoot(InputAction.CallbackContext context)
+        private void OnShoot(InputAction.CallbackContext context) //semi automatic fire.
         {
             if (isSemi)
             {
@@ -183,7 +173,7 @@ namespace OperationPolygon.Combat
                     }
 
                 }
-                if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading)
+                if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() > 0)
                 {
                     PlayWeaponEmptyAndReturn();
                     ShootAction();
@@ -192,6 +182,18 @@ namespace OperationPolygon.Combat
                 {
                     PlayWeaponEmptyAndReturn();
                 }
+            }
+        }
+
+        private void AutomaticFire()
+        {
+            if (currentAmmoInMag > 0 && timeSinceLastShot >= fireRate)
+            {
+                ShootAction();
+            }
+            else if (currentAmmoInMag <= 0 && timeSinceLastShot >= fireRateWhenEmpty)
+            {
+                PlayWeaponEmptyAndReturn();
             }
         }
 
