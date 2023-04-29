@@ -3,38 +3,53 @@ using UnityEngine;
 
 namespace OperationPolygon.Combat 
 {
-
-    public class AmmoInventory : MonoBehaviour
+    public class AmmoInventory : MonoBehaviour, IDataPersistence
     {
+        public static AmmoInventory Instance { get; private set; }
+
         private int currentAmmoInUse;
         private int currentAssaultRifleAmmo;
         private int currentSMGAmmo;
         private int currentLMGAmmo;
         private int currentGrenades;
         private int currentSniperAmmo;
-        [SerializeField] private int startingAssaultRifleAmmo;
-        [SerializeField] private int startingSMGAmmo;
-        [SerializeField] private int startingLMGAmmo;
-        [SerializeField] private int startingGrenades;
-        [SerializeField] private int startingSniperAmmo;
+        [field: SerializeField] public int StartingAssaultRifleAmmo { get; private set; }
+        [field: SerializeField] public int StartingSMGAmmo { get; private set; }
+        [field: SerializeField] public int StartingLMGAmmo { get; private set; }
+        [field: SerializeField] public int StartingGrenades { get; private set; }
+        [field: SerializeField] public int StartingSniperRifleAmmo { get; private set; }
         [SerializeField] private int maxAssaultRifleAmmoInInventory;
         [SerializeField] private int maxSMGAmmoInInventory;
         [SerializeField] private int maxLMGAmmoInInventory;
         [SerializeField] private int maxGrenadesInInventory;
-        [SerializeField] private int maxSniperAmmo;
+        [SerializeField] private int maxSniperRifleAmmo;
         private Weapon currentWeapon;
         private WeaponInventory weaponInventory;
 
         private void Awake()
         {
-            
+            Instance = this;
             weaponInventory = GetComponent<WeaponInventory>();
             currentWeapon = weaponInventory.CurrentWeapon;
         }
 
         private void Start()
         {
+
             InitializeCurrentWeaponData();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.I)) 
+            {
+                DataPersistenceManager.Instance.SaveGame();
+            }
+
+            if (Input.GetKeyDown(KeyCode.U)) 
+            {
+                DataPersistenceManager.Instance.LoadGame();
+            }
         }
 
         public void InitializeCurrentWeaponData()
@@ -124,9 +139,9 @@ namespace OperationPolygon.Combat
                     break;
                 case WeaponClass.SniperRifle:
                     currentSniperAmmo += ammoToAdd;
-                    if(currentSniperAmmo >= maxSniperAmmo) 
+                    if(currentSniperAmmo >= maxSniperRifleAmmo) 
                     {
-                        currentSniperAmmo = maxSniperAmmo;
+                        currentSniperAmmo = maxSniperRifleAmmo;
                     }
                     currentAmmoInUse = currentSniperAmmo;
                     break;
@@ -148,5 +163,22 @@ namespace OperationPolygon.Combat
             return currentAmmoInUse;
         }
 
+        public void LoadData(GameData data)
+        {
+            this.currentAssaultRifleAmmo = data.currentAssaultRifleAmmo;
+            this.currentSMGAmmo = data.currentSMGAmmo;
+            this.currentLMGAmmo = data.currentLMGAmmo;
+            this.currentSniperAmmo = data.currentSniperRifleAmmo;
+            this.currentGrenades = data.currentGrenades;
+        }
+
+        public void SaveData(ref GameData data)
+        {
+            data.currentAssaultRifleAmmo = this.currentAssaultRifleAmmo;
+            data.currentSMGAmmo = this.currentSMGAmmo;
+            data.currentLMGAmmo = this.currentLMGAmmo;
+            data.currentSniperRifleAmmo = this.currentSniperAmmo;
+            data.currentGrenades = this.currentGrenades;
+        }
     }
 }

@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class FragCount : MonoBehaviour
 {
-    private int fragCount = 0;
+    public static FragCount Instance { get; private set; }
+    public int FragCountNumber { get; private set;}
 
     public int GetFragCount() 
     {
-        return fragCount;
+        return FragCountNumber;
     }
 
     public void IncrementFragCount() 
     {
-        fragCount++;
+        FragCountNumber++;
     }
 }
