@@ -109,6 +109,7 @@ namespace OperationPolygon.Combat
             uiManager.InitalizeUI();
             isReloading = false;
             timeSinceLastShot = fireRate;
+            shooter.GetAnimator().runtimeAnimatorController = animOverride;
         }
 
         private void OnDisable()
