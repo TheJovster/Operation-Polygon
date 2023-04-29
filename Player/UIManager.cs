@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
     private Health health;
     private Stamina stamina;
 
+    private string notAvailable = "N/A";
+
     private void Awake()
     {
         Instance = this;
@@ -53,6 +55,10 @@ public class UIManager : MonoBehaviour
     {
         currentWeapon = weaponInventory.CurrentWeapon;
         ammoInventory = GetComponent<AmmoInventory>();
+        if(currentWeapon == null) 
+        {
+            return;
+        }
         GetWeaponName();
     }
 
@@ -64,15 +70,24 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ammoCount.text = currentWeapon.GetCurrentAmmoInMag().ToString();
-        ammoInInventoryCount.text = ammoInventory.GetCurrentAmmoInInventory().ToString();
-        healthBar.fillAmount = health.GetHealthPercentage();
-        staminaBar.fillAmount = stamina.GetStaminaPercentage();
-        timer.text = gameManager.GetCurrentTime().ToString("0.0");
-        fragCountText.text = fragCount.GetFragCount().ToString();
-        healthPacks.text = itemInventory.NumberOfHealthPacks.ToString();
-        //This may seem inconsistent - that's because I didn't set FragCount as a property, but instead
-        //the int is being retrieved through a getter method.
+        if(currentWeapon == null) 
+        {
+            ammoCount.text = notAvailable;
+            ammoInInventoryCount.text = notAvailable;
+        }
+        else 
+        {
+            ammoCount.text = currentWeapon.GetCurrentAmmoInMag().ToString();
+            ammoInInventoryCount.text = ammoInventory.GetCurrentAmmoInInventory().ToString();
+            healthBar.fillAmount = health.GetHealthPercentage();
+            staminaBar.fillAmount = stamina.GetStaminaPercentage();
+            timer.text = gameManager.GetCurrentTime().ToString("0.0");
+            fragCountText.text = fragCount.GetFragCount().ToString();
+            healthPacks.text = itemInventory.NumberOfHealthPacks.ToString();
+            //This may seem inconsistent - that's because I didn't set FragCount as a property, but instead
+            //the int is being retrieved through a getter method.
+        }
+
     }
 
     public void ShowPauseMenu() 
