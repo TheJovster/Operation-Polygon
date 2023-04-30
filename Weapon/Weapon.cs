@@ -54,8 +54,9 @@ namespace OperationPolygon.Combat
         private PlayerInput playerInput;
 
         [Header("Small Arms Variables")]
-        [SerializeField] private bool isSemi = false;
         [SerializeField] private bool hasSelectFire;
+        [field: SerializeField] public bool IsSemi { get; private set; }
+
         [SerializeField] private float fireRate; //rate of fire of the weapon
         private float fireRateWhenEmpty = .5f; //this is going to slow down the playing of the PlayEmptyAndReturn method.
         private float timeSinceLastShot;
@@ -134,7 +135,7 @@ namespace OperationPolygon.Combat
         {
             timeSinceLastShot += Time.deltaTime; //this is a constant timer that keeps updating timeSinceLastShot.
 
-            if (!isSemi && input.shoot && shooter.IsAiming()) //automatic fire has to be setup like this because there needs to be a constant check if input.shoot is held && a constant check to see if timeSinceLastTime >= fireRate
+            if (!IsSemi && input.shoot && shooter.IsAiming()) //automatic fire has to be setup like this because there needs to be a constant check if input.shoot is held && a constant check to see if timeSinceLastTime >= fireRate
             {
                 AutomaticFire();
             }
@@ -170,7 +171,7 @@ namespace OperationPolygon.Combat
 
         private void OnShoot(InputAction.CallbackContext context) //semi automatic fire.
         {
-            if (isSemi)
+            if (IsSemi)
             {
                 if (shooter.IsAiming() && currentAmmoInMag > 0 && context.performed && Input.GetMouseButtonDown(0))
                 {
@@ -321,7 +322,7 @@ namespace OperationPolygon.Combat
 
         private void SelectFireMode()
         {
-            isSemi = !isSemi;
+            IsSemi = !IsSemi;
             weaponAudioSource.PlayOneShot(weaponReloadSounds[0]);
         }
 

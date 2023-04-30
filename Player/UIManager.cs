@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentWeaponText;
     [SerializeField] private TextMeshProUGUI fragCountText;
     [SerializeField] private TextMeshProUGUI healthPacks;
+    [SerializeField] private TextMeshProUGUI fireMode;
     [Header("Image Components")]
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
@@ -74,6 +75,7 @@ public class UIManager : MonoBehaviour
         {
             ammoCount.text = notAvailable;
             ammoInInventoryCount.text = notAvailable;
+            fireMode.text = notAvailable;
         }
         else 
         {
@@ -84,6 +86,7 @@ public class UIManager : MonoBehaviour
             timer.text = gameManager.GetCurrentTime().ToString("0.0");
             fragCountText.text = fragCount.GetFragCount().ToString();
             healthPacks.text = itemInventory.NumberOfHealthPacks.ToString();
+            fireMode.text = weaponInventory.CurrentWeapon.IsSemi ? "SEMI" : "AUTO";
             //This may seem inconsistent - that's because I didn't set FragCount as a property, but instead
             //the int is being retrieved through a getter method.
         }
