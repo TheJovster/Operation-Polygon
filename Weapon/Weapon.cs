@@ -4,6 +4,7 @@ using StarterAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 using System;
+using Unity.VisualScripting;
 
 namespace OperationPolygon.Combat 
 {
@@ -54,6 +55,7 @@ namespace OperationPolygon.Combat
 
         [Header("Small Arms Variables")]
         [SerializeField] private bool isSemi = false;
+        [SerializeField] private bool hasSelectFire;
         [SerializeField] private float fireRate; //rate of fire of the weapon
         private float fireRateWhenEmpty = .5f; //this is going to slow down the playing of the PlayEmptyAndReturn method.
         private float timeSinceLastShot;
@@ -145,6 +147,10 @@ namespace OperationPolygon.Combat
             {
                 ToggleFlashlight();
             }
+            if (Input.GetKeyDown(KeyCode.X) && hasSelectFire)
+            {
+                SelectFireMode();
+            }
         }
 
 
@@ -166,9 +172,10 @@ namespace OperationPolygon.Combat
         {
             if (isSemi)
             {
-                if (shooter.IsAiming() && currentAmmoInMag > 0)
+                if (shooter.IsAiming() && currentAmmoInMag > 0 && context.performed && Input.GetMouseButtonDown(0))
                 {
-                    if (context.performed && currentAmmoInMag > 0 && timeSinceLastShot >= fireRate && !isReloading) //for some reason, this was the only way I found to make the weapon fire automatically
+
+                    if ( currentAmmoInMag > 0 && timeSinceLastShot >= fireRate && !isReloading) //for some reason, this was the only way I found to make the weapon fire automatically
                     {
                         ShootAction();
                     }
@@ -218,6 +225,7 @@ namespace OperationPolygon.Combat
                     StartCoroutine(ReloadAnimationWaitTime());
 
                 }
+                
             }
             else if(!isReloading && IsLauncher) 
             {
@@ -309,6 +317,12 @@ namespace OperationPolygon.Combat
                 currentAmmoInMag = ammoInventory.GetCurrentAmmoInInventory();
             }
             ammoInventory.RemoveAmmo(ammoToRemove);
+        }
+
+        private void SelectFireMode()
+        {
+            isSemi = !isSemi;
+            weaponAudioSource.PlayOneShot(weaponReloadSounds[0]);
         }
 
         private void ToggleFlashlight() 
