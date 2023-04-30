@@ -182,12 +182,12 @@ namespace OperationPolygon.Combat
                     }
 
                 }
-                if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() > 0)
+                if (shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() > 0 && Input.GetMouseButtonDown(0))
                 {
                     PlayWeaponEmptyAndReturn();
                     ShootAction();
                 }
-                else if(shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() <= 0) 
+                else if(shooter.IsAiming() && currentAmmoInMag == 0 && !isReloading && ammoInventory.GetCurrentAmmoInInventory() <= 0 && Input.GetMouseButtonDown(0)) 
                 {
                     PlayWeaponEmptyAndReturn();
                 }
