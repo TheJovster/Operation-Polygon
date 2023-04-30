@@ -86,9 +86,6 @@ namespace OperationPolygon.Core
                 if(this.gameObject.tag == "EnemyZombie") 
                 {
                     animator.SetTrigger("GetHit");
-                    GameObject.FindGameObjectWithTag("Player").
-                        GetComponentInChildren<Stamina>().
-                        RegenStamina(staminaToAdd);
                     this.gameObject.GetComponent<EnemyZombieController>().SetAggro();
                     if(this.gameObject.GetComponentInParent<HordeBehaviourScript>() != null) 
                     {
@@ -98,9 +95,6 @@ namespace OperationPolygon.Core
                 else if(this.gameObject.tag == "EnemySoldier") 
                 {
                     animator.SetTrigger("GetHit");
-                    GameObject.FindGameObjectWithTag("Player").
-                        GetComponentInChildren<Stamina>().
-                        RegenStamina(staminaToAdd);
                 }
                 else if(this.gameObject.tag == "Player") 
                 {
@@ -112,16 +106,12 @@ namespace OperationPolygon.Core
                     StartCoroutine(PlayerTriggerGetHit());
                 }
             }
-            //particle and sounds effects
-            //animation triggers
             if(currentHealth <= 0) 
             {
                 isAlive = false;
                 Die();
             }
         }
-
-        //TOOD: public void  RestoreHealth(int restoreAmount) {}
 
         private void Die() 
         {
@@ -257,7 +247,6 @@ namespace OperationPolygon.Core
             if(currentHealth >= maxHealth) 
             {
                 currentHealth = maxHealth;
-                
             }
         }
 
