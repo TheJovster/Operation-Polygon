@@ -211,11 +211,11 @@ namespace OperationPolygon.Combat
             if (!isReloading && !IsLauncher)  
             {
                 timeSinceLastShot = 0;
-                Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; //needs further testing
-                muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint); //needs further testing
-                Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward)); //needs further testing
+                Vector3 muzzleDirection = (aimTarget.GetMouseWorldPosition() - muzzlePoint.position).normalized; 
+                muzzlePoint.localEulerAngles = spreadHandler.SpreadAngle(muzzlePoint); 
+                Instantiate(weaponProjectile, muzzlePoint.position, Quaternion.LookRotation(muzzlePoint.forward)); 
                 recoilHandler.TriggerRecoil();
-                AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)]; //why am I being explicit? Because the code demands it.
+                AudioClip clipToPlay = weaponShotSounds[UnityEngine.Random.Range(0, weaponShotSounds.Length)];
                 weaponAudioSource.PlayOneShot(clipToPlay);
                 muzzleFlashFX.Play();
                 bulletEjectFX.Play();
@@ -240,7 +240,7 @@ namespace OperationPolygon.Combat
             }
         }
 
-        private void LaunchProjectile() //this is made for the shoot action
+        private void LaunchProjectile() //this script is written to work within the ShootActionMethod.
         {
             timeSinceLastShot = 0;
             weaponAudioSource.PlayOneShot(weaponShotSounds[0]);
@@ -250,15 +250,6 @@ namespace OperationPolygon.Combat
             Vector3 launchDirection = muzzlePoint.forward * Mathf.Cos(radianAngle) + muzzlePoint.up * Mathf.Sin(radianAngle);
             rb.AddForce(launchDirection * launchForce, ForceMode.Impulse);
             currentAmmoInMag--;
-
-            //TODO: Create ExplosiveProjectileClass
-            //the projectile, upon hitting the ground is supposed to do:
-            //coroutine
-            //do a sphere cast and find all of the objects tagged enemy caught in the cast.
-            //take away all of the health - do 200f damage;
-            //wait .05 seconds
-            //take all of the rigid bodies and add relative force to them, thus making the fly away
-            //destroy game object after .5f
         }
 
         public void OnReload(InputAction.CallbackContext context)
