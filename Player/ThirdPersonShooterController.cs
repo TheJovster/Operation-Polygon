@@ -78,15 +78,9 @@ namespace OperationPolygon.Combat
         void Update()
         {
             AimState();
-         
             aimRig.weight = Mathf.Lerp(aimRig.weight, aimRigWeight, Time.deltaTime * rigWeightLerpTime);
             ShoulderSwitch();
             IsSwitchingShouldersTimer();
-        }
-
-        private void FixedUpdate()
-        {
-            
         }
 
         private void AimState()
@@ -115,7 +109,7 @@ namespace OperationPolygon.Combat
                 Vector3 aimTarget = mouseWorldPosition;
                 aimTarget.y = transform.position.y;
                 Vector3 aimDirection = (aimTarget - transform.position).normalized;
-                transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * lookForwardLerpValue); //bad practice here
+                transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * lookForwardLerpValue);
             }
             else
             {
@@ -135,7 +129,6 @@ namespace OperationPolygon.Combat
         {
             if (input.aim && Input.GetMouseButtonDown(2) && Time.timeScale == 1 && !isSwitchingShoulders)
             {
-                
                 StartCoroutine(SwitchShouldersRoutine());
             }
         }
@@ -173,7 +166,7 @@ namespace OperationPolygon.Combat
             }
         }
 
-        private void IsSwitchingShouldersTimer() 
+        private void IsSwitchingShouldersTimer() //this is a security that makes sure that the shoulder switch works as intended - by giving it that extra .1f, 
         {
             if (isSwitchingShoulders) 
             {
